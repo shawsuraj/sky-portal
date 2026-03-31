@@ -34,12 +34,13 @@ sky-portal/
 ├── config/                  # Django project (settings, urls)
 │
 ├── apps/                    # ALL FEATURES (modular)
-│   ├── teams/               # Student 1
+│   ├── teams/               # Vinicius
 │   ├── organisation/        # Suraj Shaw
-│   ├── messages/            # Student 3
-│   ├── schedule/            # Student 4
+│   ├── messages/            # Hamdan
+│   ├── schedule/            # Shqipdon
 │   ├── users/               # AUTH (shared)
 │   ├── core/                # homepage, navbar, base logic
+│       ├── reports/         # Mohammad
 │
 ├── templates/
 │   ├── base.html            # ONE shared layout
@@ -59,7 +60,7 @@ sky-portal/
 │   ├── meeting-notes.md
 │   ├── ui-designs/         # All the figma design
 │
-├── scripts/                 # optional setup scripts
+├── scripts/                # optional setup scripts
 ├── reports/                # Reports by Mohammad
 
 ```
