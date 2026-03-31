@@ -1,0 +1,1 @@
+# Placeholder: AppConfig for teams
