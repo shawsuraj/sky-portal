@@ -1,1 +1,0 @@
-# Placeholder: URLs for schedule

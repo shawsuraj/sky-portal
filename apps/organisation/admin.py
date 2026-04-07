@@ -1,1 +1,3 @@
-# Placeholder: admin registrations for organisation
+from django.contrib import admin
+
+# Register your models here.

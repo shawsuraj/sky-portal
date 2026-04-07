@@ -1,1 +1,3 @@
-# Placeholder: views for teams
+from django.shortcuts import render
+
+# Create your views here.

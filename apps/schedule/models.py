@@ -1,1 +1,3 @@
-# Placeholder: models for schedule
+from django.db import models
+
+# Create your models here.
