@@ -1,1 +1,0 @@
-# Placeholder: schedule app package

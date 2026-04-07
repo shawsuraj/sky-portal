@@ -1,1 +1,3 @@
-# Placeholder: tests for users
+from django.test import TestCase
+
+# Create your tests here.
