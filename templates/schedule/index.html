@@ -1,1 +1,15 @@
-<!-- Placeholder: schedule page -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule</title>
+</head>
+<body>
+    <h1>Schedule Home</h1>
+
+    {% for meeting in meetings %}
+        <p>{{ meeting.title }} - {{ meeting.meeting_datetime }}</p>
+    {% empty %}
+        <p>No meetings yet.</p>
+    {% endfor %}
+</body>
+</html>
