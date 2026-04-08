@@ -1,1 +1,3 @@
-# Placeholder: tests for schedule
+from django.test import TestCase
+
+# Create your tests here.

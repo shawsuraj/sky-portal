@@ -1,1 +1,3 @@
-# Placeholder: models for organisation
+from django.db import models
+
+# Create your models here.

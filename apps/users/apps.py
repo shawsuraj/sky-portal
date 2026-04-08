@@ -1,1 +1,5 @@
-# Placeholder: AppConfig for users
+from django.apps import AppConfig
+
+
+class UsersConfig(AppConfig):
+    name = 'apps.users'

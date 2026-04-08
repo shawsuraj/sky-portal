@@ -1,1 +1,0 @@
-# Placeholder: AppConfig for messages

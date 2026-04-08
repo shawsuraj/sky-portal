@@ -1,1 +1,0 @@
-# Placeholder: teams app package

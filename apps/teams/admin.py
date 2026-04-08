@@ -1,1 +1,3 @@
-# Placeholder: admin registrations for teams
+from django.contrib import admin
+
+# Register your models here.

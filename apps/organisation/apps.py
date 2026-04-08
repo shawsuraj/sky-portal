@@ -1,1 +1,5 @@
-# Placeholder: AppConfig for organisation
+from django.apps import AppConfig
+
+
+class OrganisationConfig(AppConfig):
+    name = 'apps.organisation'

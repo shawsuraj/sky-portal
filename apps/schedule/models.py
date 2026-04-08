@@ -1,3 +1,4 @@
+
 # Placeholder: models for schedule
 # imports for the models
 from django.db import models
@@ -55,3 +56,4 @@ class MeetingAttendee(models.Model):
     # controls how the attendee records are shown in admin
     def __str__(self):
         return self.attendee_name + " - " + self.meeting.title
+
