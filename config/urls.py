@@ -27,7 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("",views.home, name="home"),
     path("mails/",mailview.mails, name="mails"),
-    path("mails/inbox/", mailview.inbox, name="inbox")
+    path("mails/inbox/", mailview.inbox, name="inbox"),
     path('schedule/', include('apps.schedule.urls')),
 
 ]
