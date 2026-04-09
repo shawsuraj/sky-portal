@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.urls import path, include
 
 from apps.core import views
 from apps.mails import views as mailview
@@ -27,4 +28,6 @@ urlpatterns = [
     path("",views.home, name="home"),
     path("mails/",mailview.mails, name="mails"),
     path("mails/inbox/", mailview.inbox, name="inbox")
+    path('schedule/', include('apps.schedule.urls')),
+
 ]

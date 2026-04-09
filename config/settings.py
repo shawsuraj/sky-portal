@@ -37,12 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'apps.teams',
     'apps.organisation',
     'apps.mails',
     'apps.schedule',
     'apps.users',
-    'apps.core'
+    'apps.core',
 ]
 
 MIDDLEWARE = [
@@ -109,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
@@ -124,3 +125,4 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN' # Allows for iframe to display 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
