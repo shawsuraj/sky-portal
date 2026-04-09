@@ -1,1 +1,26 @@
 <!-- Placeholder: mails page -->
+<html>
+
+<style>
+.tab-content iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+        }
+</style>    
+
+    <body>
+        <h1> MESSAGES </h1>
+
+         <div class="tab-content">
+            <iframe id="tab-frame" src="{% url 'inbox' %}"> </iframe>
+
+
+            <p>
+                required pages: inbox, compose, sent messages, draft, edit draft 
+            </p>    
+
+        </div>
+
+    </body>
+</html>

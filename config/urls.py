@@ -18,8 +18,13 @@ from django.contrib import admin
 from django.urls import path
 
 from apps.core import views
+from apps.mails import views as mailview
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("",views.home, name="home")
+    path("",views.home, name="home"),
+    path("mails/",mailview.mails, name="mails"),
+    path("mails/inbox/", mailview.inbox, name="inbox")
 ]
