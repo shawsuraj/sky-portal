@@ -124,4 +124,5 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+X_FRAME_OPTIONS = 'SAMEORIGIN' # Allows for iframe to display 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
