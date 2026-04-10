@@ -20,6 +20,7 @@ from django.urls import path, include
 
 from apps.core import views
 from apps.mails import views as mailview
+from apps.users import views as userview
 
 
 
@@ -31,6 +32,9 @@ urlpatterns = [
     path("mails/sent_message/", mailview.sent_message, name="sent_message"),
     path("mails/compose_message/", mailview.compose_message, name="compose_message"),
     path("mails/view_draft/", mailview.view_draft, name="view_draft"),
+    path('users/login/', userview.login_view, name='login'),
+    path('logout/', userview.logout_view, name='logout'),
+    path('users/signup/', userview.signup_view, name='signup'),
     path('schedule/', include('apps.schedule.urls')),
 
 ]
