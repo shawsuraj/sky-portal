@@ -1,21 +1,67 @@
+<!-- Placeholder: mails page -->
 <html>
 <head>
     <style>
+.container{
+    display: flex;
+}
+        .side-navigation{
+            width:10%;
+            border: 1px solid #ccc;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
 
+                .side-navigation a{
+            background-color: #b3e0ff;
+        }
+
+        .side-navigation a:hover{
+            border: 4px solid black;
+        }
+
+        .side-navigation a.active{
+            background-color: #77a3c0;
+        }   
+
+.inbox{
+            width:35%;
+            border: 1px solid #ccc;
+            padding: 20px;
+}
+.content{
+               width:50%;
+            border: 1px solid #ccc;
+            padding: 20px; 
+}
 
     </style>
 </head>
     <body>
-        <h1> VIEW DRAFTS </h1>
+        <h1> DRAFT MESSAGES </h1>
 
         <p>HERE ARE YOUR MESSAGES:</p>
-<a href="{% url 'compose_message' %}">Compose</a>
-<a href="{% url 'inbox' %}">Inbox</a>
-<a href="{% url 'sent_message' %}">Sent</a>
-<a href="{% url 'view_draft' %}">Draft</a>
-        <div>Inbox</div>
 
-        <div>Content</div>
+<div class="container">
+
+<div class="side-navigation">
+
+<a href="{% url 'compose_message' %}">Compose</a>
+<a href="{% url 'inbox' %}" >Inbox</a>
+<a href="{% url 'sent_message' %}">Sent</a>
+<a href="{% url 'view_draft' %}"class="active">Draft</a>
+
+</div>
+
+
+
+         
+        <div class="inbox">Inbox</div>
+
+        <div class="content">Content</div>
+
+</div>
         
     </body>
 </html>
