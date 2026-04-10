@@ -2,5 +2,25 @@
 <html>
     <body>
         <h1> This is our BASE HTML.
+            <a href="{% url 'teams:teams_list' %}" class="start-btn">
+    Go to Teams Directory →
+</a>
+
+<style>
+    .start-btn {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+    .start-btn:hover {
+        background-color: #555;
+    }
+</style>
     </body>
 </html>

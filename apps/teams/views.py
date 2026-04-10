@@ -1,3 +1,4 @@
 from django.shortcuts import render
 
-# Create your views here.
+def views_list(request):
+    return render(request, 'teams/teams.html')
