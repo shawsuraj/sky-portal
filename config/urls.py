@@ -28,6 +28,9 @@ urlpatterns = [
     path("",views.home, name="home"),
     path("mails/",mailview.mails, name="mails"),
     path("mails/inbox/", mailview.inbox, name="inbox"),
+    path("mails/sent_message/", mailview.sent_message, name="sent_message"),
+    path("mails/compose_message/", mailview.compose_message, name="compose_message"),
+    path("mails/view_draft/", mailview.view_draft, name="view_draft"),
     path('schedule/', include('apps.schedule.urls')),
 
 ]
