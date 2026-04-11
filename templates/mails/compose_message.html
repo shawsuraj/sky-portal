@@ -13,8 +13,9 @@
             flex-direction: column;
         }
 
-                .side-navigation a{
+        .side-navigation a{
             background-color: #b3e0ff;
+            border: 4px solid white;
         }
 
         .side-navigation a:hover{
@@ -43,9 +44,13 @@
 <div class="side-navigation">
 
 <a href="{% url 'compose_message' %}" class="active">Compose</a>
+<br>
 <a href="{% url 'inbox' %}" >Inbox</a>
+<br>
 <a href="{% url 'sent_message' %}">Sent</a>
+<br>
 <a href="{% url 'view_draft' %}">Draft</a>
+<br>
 
 </div>
 
