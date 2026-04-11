@@ -24,16 +24,10 @@
 
         .side-navigation a.active{
             background-color: #77a3c0;
-        }           
+        }   
 
-
-.inbox{
-            width:35%;
-            border: 1px solid #ccc;
-            padding: 20px;
-}
 .content{
-               width:50%;
+               width:85%;
             border: 1px solid #ccc;
             padding: 20px; 
 }
@@ -41,7 +35,7 @@
     </style>
 </head>
     <body>
-        <h1> INBOX </h1>
+        <h1> COMPOSE MESSAGE </h1>
 
         <p>HERE ARE YOUR MESSAGES:</p>
 
@@ -49,9 +43,9 @@
 
 <div class="side-navigation">
 
-<a href="{% url 'compose_message' %}">Compose</a>
+<a href="{% url 'compose_message' %}" class="active">Compose</a>
 <br>
-<a href="{% url 'inbox' %}" class="active">Inbox</a>
+<a href="{% url 'inbox' %}" >Inbox</a>
 <br>
 <a href="{% url 'sent_message' %}">Sent</a>
 <br>
@@ -63,7 +57,6 @@
 
 
          
-        <div class="inbox">Inbox</div>
 
         <div class="content">Content</div>
 
