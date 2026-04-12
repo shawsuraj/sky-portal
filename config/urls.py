@@ -37,5 +37,6 @@ urlpatterns = [
     path('users/signup/', userview.signup_view, name='signup'),
     path('users/update_profile/', userview.update_profile, name='update_profile'),
     path('schedule/', include('apps.schedule.urls')),
+    path('organisation/', include('apps.organisation.urls')),
 
 ]

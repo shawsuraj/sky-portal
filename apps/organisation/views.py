@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def organisation_portal(request):
+    return render(request, "organisation/index.html")
