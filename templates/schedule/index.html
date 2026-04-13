@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{% static 'css/schedule.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/schedule.css' %}?v=6">
 </head>
 <body>
 
@@ -44,18 +44,17 @@
 
         <!-- MAIN CONTENT -->
         <div class="main-content p-4">
-
             <div class="row g-4 align-items-start">
 
                 <!-- LEFT SIDE -->
                 <div class="col-lg-9">
 
-                    <!-- Calendar box -->
+                    <!-- Calendar -->
                     <div class="calendar-box p-3 mb-3">
                         <div id="calendar"></div>
                     </div>
 
-                    <!-- Button under calendar -->
+                    <!-- Schedule button -->
                     <button type="button" class="btn schedule-btn" id="openScheduleBtn">
                         + Schedule Meeting
                     </button>
@@ -68,16 +67,73 @@
                     <div class="upcoming-box p-3">
                         <h5 class="fw-bold mb-3">Upcoming Schedule</h5>
 
-                        <!-- JS will add meeting cards here -->
                         <div id="upcomingMeetings">
-                            <p id="noMeetingsText">No meetings yet.</p>
+
+                            {% for meeting in meetings %}
+                                <div class="card mb-2 p-3 meeting-card">
+
+                                    <!-- basic details shown on card -->
+                                    <strong>{{ meeting.title }}</strong><br>
+                                    Date: {{ meeting.meeting_datetime|date:"Y-m-d" }}<br>
+                                    Time: {{ meeting.meeting_datetime|time:"H:i" }}<br>
+
+                                    <div class="mt-2 d-flex gap-2 flex-wrap">
+                                        <!-- See More button -->
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#meetingModal{{ meeting.id }}"
+                                        >
+                                            See More
+                                        </button>
+
+                                        <!-- Cancel button -->
+                                        <form method="POST" action="{% url 'delete_meeting' meeting.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </div>
+
+                                <!-- SEE MORE MODAL FOR THIS MEETING -->
+                                <div class="modal fade" id="meetingModal{{ meeting.id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{{ meeting.title }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <p><strong>Date:</strong> {{ meeting.meeting_datetime|date:"Y-m-d" }}</p>
+                                                <p><strong>Time:</strong> {{ meeting.meeting_datetime|time:"H:i" }}</p>
+                                                <p><strong>Team:</strong> {{ meeting.team_name }}</p>
+                                                <p><strong>Platform:</strong> {{ meeting.platform }}</p>
+                                                <p><strong>Message:</strong> {{ meeting.agenda_message|default:"No message" }}</p>
+                                                <p><strong>Created By:</strong> {{ meeting.created_by_name|default:"Unknown" }}</p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                            <!-- no meetings text -->
+                            <p id="noMeetingsText" {% if meetings %}style="display:none;"{% endif %}>
+                                No meetings yet.
+                            </p>
+
                         </div>
                     </div>
 
                 </div>
 
             </div>
-
         </div>
     </div>
 
@@ -86,13 +142,13 @@
         © 2026 Sky Engineering Directory
     </footer>
 
-    <!-- MODAL -->
+    <!-- CREATE MEETING MODAL -->
     <div class="modal fade" id="scheduleModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
 
-                <!-- Meeting form -->
-                <form id="meetingForm">
+                <form id="meetingForm" method="POST">
+                    {% csrf_token %}
 
                     <div class="modal-header">
                         <h5 class="modal-title">Schedule Meeting</h5>
@@ -101,73 +157,76 @@
 
                     <div class="modal-body">
 
-                        <!-- Meeting title -->
                         <div class="mb-3">
-                            <label for="meetingTitle" class="form-label">Title</label>
+                            <label class="form-label">Title</label>
                             <input
                                 type="text"
                                 class="form-control"
-                                id="meetingTitle"
+                                name="title"
                                 placeholder="Enter meeting title"
                                 required
                             >
                         </div>
 
-                        <!-- Meeting date -->
                         <div class="mb-3">
-                            <label for="meetingDate" class="form-label">Date</label>
+                            <label class="form-label">Date</label>
                             <input
                                 type="date"
                                 class="form-control"
                                 id="meetingDate"
+                                name="meeting_date"
                                 required
                             >
                         </div>
 
-                        <!-- Meeting time -->
                         <div class="mb-3">
-                            <label for="meetingTime" class="form-label">Time</label>
+                            <label class="form-label">Time</label>
                             <input
                                 type="time"
                                 class="form-control"
-                                id="meetingTime"
+                                name="meeting_time"
                                 required
                             >
                         </div>
 
-                        <!-- Team dropdown -->
                         <div class="mb-3">
-                            <label for="meetingTeam" class="form-label">Team</label>
-                            <select class="form-select" id="meetingTeam" required>
+                            <label class="form-label">Team</label>
+                            <select class="form-select" name="team_name" required>
                                 <option value="">Select a team</option>
-                                <option value="Backend Team">Backend Team</option>
-                                <option value="Frontend Team">Frontend Team</option>
-                                <option value="DevOps Team">DevOps Team</option>
-                                <option value="Mobile Team">Mobile Team</option>
+                                {% for team in teams %}
+                                    <option value="{{ team }}">{{ team }}</option>
+                                {% endfor %}
                             </select>
                         </div>
 
-                        <!-- meeting  dropdown -->
                         <div class="mb-3">
-                            <label for="meetingLocation" class="form-label">Meeting Location</label>
-                            <select class="form-select" id="meetingLocation" required>
+                            <label class="form-label">Meeting Location</label>
+                            <select class="form-select" name="platform" required>
                                 <option value="">Select a meeting location</option>
                                 <option value="Zoom">Zoom</option>
                                 <option value="Microsoft Teams">Microsoft Teams</option>
                                 <option value="Google Meet">Google Meet</option>
-                                
                             </select>
                         </div>
 
-                        <!-- Message -->
                         <div class="mb-3">
-                            <label for="meetingMessage" class="form-label">Message</label>
+                            <label class="form-label">Message</label>
                             <textarea
                                 class="form-control"
-                                id="meetingMessage"
+                                name="agenda_message"
                                 rows="3"
-                                placeholder="Enter message"
+                                placeholder="Enter message (optional)"
                             ></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Created By</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="created_by_name"
+                                placeholder="Enter your name"
+                            >
                         </div>
 
                     </div>
@@ -182,16 +241,23 @@
         </div>
     </div>
 
-    <!-- Keep Django data empty for testing-only page -->
+    <!-- meetings for calendar -->
     <script>
-        var meetingsFromDjango = [];
+        var meetingsFromDjango = [
+            {% for meeting in meetings %}
+            {
+                title: "{{ meeting.title|escapejs }}",
+                start: "{{ meeting.meeting_datetime|date:'c' }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
     </script>
 
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- JS -->
-    <script src="{% static 'js/schedule.js' %}?v=3"></script>
+    <script src="{% static 'js/schedule.js' %}?v=6"></script>
 
 </body>
 </html>

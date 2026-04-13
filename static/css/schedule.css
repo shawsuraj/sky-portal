@@ -27,7 +27,7 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* calendar sizing */
+/* calendar size */
 #calendar {
     width: 100%;
     min-height: 460px;
