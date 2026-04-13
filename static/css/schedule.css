@@ -3,38 +3,13 @@ body {
     margin: 0;
 }
 
-/* header */
-.navbar {
-    background-color: #1787ff !important;
-    color: white;
-    min-height: 55px;
-}
-
-.navbar span {
-    color: white;
-    font-weight: 600;
-}
-
-/* sidebar */
-.sidebar {
-    width: 220px;
-    min-height: calc(100vh - 95px);
-    background: #1787ff;
-    color: white;
-}
-
-.sidebar p,
-.sidebar h5 {
-    color: white;
-}
-
 /* main content */
 .main-content {
     flex: 1;
     padding: 25px !important;
 }
 
-/* make middle content bigger */
+/* calendar container */
 .calendar-box {
     background: white;
     border-radius: 14px;
@@ -43,6 +18,7 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
+/* upcoming meetings container */
 .upcoming-box {
     background: white;
     border-radius: 14px;
@@ -70,20 +46,5 @@ body {
 
 .schedule-btn:hover {
     background: #0f76e6;
-}
-
-/* footer smaller */
-footer {
-    background-color: #1787ff;
     color: white;
-    font-size: 14px;
-    padding: 8px 0 !important;
-    margin-top: 10px !important;
-}
-
-footer p,
-footer span,
-footer div {
-    color: white;
-    margin: 0;
 }

@@ -13,148 +13,185 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{% static 'css/schedule.css' %}">
+    <link rel="stylesheet" href="{% static 'css/schedule.css' %}?v=3">
 </head>
 <body>
 
-<!-- ================= HEADER ================= -->
-<nav class="navbar px-4">
-    <span>Sky Eng</span>
-    <span>Notifications | Profile</span>
-</nav>
+    <!-- HEADER -->
+    <nav class="navbar px-4 border-bottom bg-white">
+        <span>Sky Eng</span>
+        <span>Notifications | Profile</span>
+    </nav>
 
-<div class="d-flex">
+    <div class="d-flex">
 
-    <!-- ================= SIDEBAR ================= -->
-    <div class="sidebar p-3">
-        <h5 class="mb-4">NAVIGATION</h5>
+        <!-- SIDEBAR -->
+        <div class="sidebar p-3 border-end bg-white">
+            <h5 class="mb-4">NAVIGATION</h5>
 
-        <p>Dashboard</p>
-        <p>Teams</p>
-        <p>Organisation</p>
-        <p>Messages</p>
+            <p>Dashboard</p>
+            <p>Teams</p>
+            <p>Organisation</p>
+            <p>Messages</p>
 
-        <p class="fw-bold">Schedule</p>
+            <p class="fw-bold">Schedule</p>
 
-        <hr>
+            <hr>
 
-        <p>Profile</p>
-        <p>Settings</p>
-    </div>
+            <p>Profile</p>
+            <p>Settings</p>
+        </div>
 
-    <!-- ================= MAIN CONTENT ================= -->
-    <div class="main-content p-4">
+        <!-- MAIN CONTENT -->
+        <div class="main-content p-4">
 
-        <div class="row g-4 align-items-start">
+            <div class="row g-4 align-items-start">
 
-            <!-- LEFT SIDE (BIGGER) -->
-            <div class="col-lg-9">
+                <!-- LEFT SIDE -->
+                <div class="col-lg-9">
 
-                <div class="calendar-box p-3 mb-3">
-                    <div id="calendar"></div>
+                    <!-- Calendar box -->
+                    <div class="calendar-box p-3 mb-3">
+                        <div id="calendar"></div>
+                    </div>
+
+                    <!-- Button under calendar -->
+                    <button type="button" class="btn schedule-btn" id="openScheduleBtn">
+                        + Schedule Meeting
+                    </button>
+
                 </div>
 
-                <button class="btn schedule-btn" id="openScheduleBtn">
-                    + Schedule Meeting
-                </button>
+                <!-- RIGHT SIDE -->
+                <div class="col-lg-3">
 
-            </div>
+                    <div class="upcoming-box p-3">
+                        <h5 class="fw-bold mb-3">Upcoming Schedule</h5>
 
-            <!-- RIGHT SIDE -->
-            <div class="col-lg-3">
-
-                <div class="upcoming-box p-3">
-                    <h5 class="fw-bold mb-3">Upcoming Schedule</h5>
-
-                    <div id="upcomingMeetings">
-
-                        {% for meeting in meetings %}
-                            <div class="card mb-2 p-2">
-                                <strong>{{ meeting.title }}</strong><br>
-                                {{ meeting.meeting_date }}<br>
-                                {{ meeting.meeting_time }}
-
-                                <button class="btn btn-danger btn-sm mt-2 remove-btn">
-                                    Remove
-                                </button>
-                            </div>
-                        {% empty %}
-                            <p>No meetings yet.</p>
-                        {% endfor %}
-
+                        <!-- JS will add meeting cards here -->
+                        <div id="upcomingMeetings">
+                            <p id="noMeetingsText">No meetings yet.</p>
+                        </div>
                     </div>
+
                 </div>
 
             </div>
 
         </div>
-
     </div>
-</div>
 
-<!-- ================= FOOTER ================= -->
-<footer class="text-center py-2">
-    © 2026 Sky Engineering Directory
-</footer>
+    <!-- FOOTER -->
+    <footer class="text-center py-2 border-top bg-white">
+        © 2026 Sky Engineering Directory
+    </footer>
 
-<!-- ================= MODAL ================= -->
-<div class="modal fade" id="scheduleModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+    <!-- MODAL -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
 
-            <form id="meetingForm">
+                <!-- Meeting form -->
+                <form id="meetingForm">
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Schedule Meeting</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-
-                    <div class="mb-2">
-                        <label>Title</label>
-                        <input type="text" class="form-control" id="meetingTitle">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Schedule Meeting</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <div class="mb-2">
-                        <label>Date</label>
-                        <input type="date" class="form-control" id="meetingDate">
+                    <div class="modal-body">
+
+                        <!-- Meeting title -->
+                        <div class="mb-3">
+                            <label for="meetingTitle" class="form-label">Title</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="meetingTitle"
+                                placeholder="Enter meeting title"
+                                required
+                            >
+                        </div>
+
+                        <!-- Meeting date -->
+                        <div class="mb-3">
+                            <label for="meetingDate" class="form-label">Date</label>
+                            <input
+                                type="date"
+                                class="form-control"
+                                id="meetingDate"
+                                required
+                            >
+                        </div>
+
+                        <!-- Meeting time -->
+                        <div class="mb-3">
+                            <label for="meetingTime" class="form-label">Time</label>
+                            <input
+                                type="time"
+                                class="form-control"
+                                id="meetingTime"
+                                required
+                            >
+                        </div>
+
+                        <!-- Team dropdown -->
+                        <div class="mb-3">
+                            <label for="meetingTeam" class="form-label">Team</label>
+                            <select class="form-select" id="meetingTeam" required>
+                                <option value="">Select a team</option>
+                                <option value="Backend Team">Backend Team</option>
+                                <option value="Frontend Team">Frontend Team</option>
+                                <option value="DevOps Team">DevOps Team</option>
+                                <option value="Mobile Team">Mobile Team</option>
+                            </select>
+                        </div>
+
+                        <!-- meeting  dropdown -->
+                        <div class="mb-3">
+                            <label for="meetingLocation" class="form-label">Meeting Location</label>
+                            <select class="form-select" id="meetingLocation" required>
+                                <option value="">Select a meeting location</option>
+                                <option value="Zoom">Zoom</option>
+                                <option value="Microsoft Teams">Microsoft Teams</option>
+                                <option value="Google Meet">Google Meet</option>
+                                
+                            </select>
+                        </div>
+
+                        <!-- Message -->
+                        <div class="mb-3">
+                            <label for="meetingMessage" class="form-label">Message</label>
+                            <textarea
+                                class="form-control"
+                                id="meetingMessage"
+                                rows="3"
+                                placeholder="Enter message"
+                            ></textarea>
+                        </div>
+
                     </div>
 
-                    <div class="mb-2">
-                        <label>Time</label>
-                        <input type="time" class="form-control" id="meetingTime">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Confirm</button>
                     </div>
 
-                </div>
+                </form>
 
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Confirm</button>
-                </div>
-
-            </form>
-
+            </div>
         </div>
     </div>
-</div>
 
-<!-- ================= DJANGO DATA ================= -->
-<script>
-    var meetingsFromDjango = [
-        {% for meeting in meetings %}
-        {
-            title: "{{ meeting.title|escapejs }}",
-            start: "{{ meeting.meeting_date|date:'Y-m-d' }}T{{ meeting.meeting_time|time:'H:i:s' }}"
-        }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ];
-</script>
+    <!-- Keep Django data empty for testing-only page -->
+    <script>
+        var meetingsFromDjango = [];
+    </script>
 
-<!-- Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- JS -->
-<script src="{% static 'js/schedule.js' %}"></script>
+    <!-- JS -->
+    <script src="{% static 'js/schedule.js' %}?v=3"></script>
 
 </body>
 </html>
