@@ -1,0 +1,60 @@
+
+<html>
+
+<style>
+
+    body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+}
+
+    .update-profile-container{
+        width:300px;
+    margin:100px auto;
+    background:white;
+    padding:20px;
+    border:1px solid #ccc;
+    }
+
+    .header{
+        text-align:center;
+    color:#1a73e8;
+    }
+
+    .form{
+        
+    }
+
+    button{
+    width:100%;
+    padding:8px;
+    background:#1a73e8;
+    color:white;
+    border:none;
+}
+
+</style>
+
+<body>
+
+<div class="update-profile-container">
+
+    <div class="header">
+<h1>Update Profile</h1>
+    </div>
+
+<div class="form">
+<form method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" value="Update Profile">Log in</button>
+</form>
+ </div>
+
+</div>
+
+</body>
+
+</html>

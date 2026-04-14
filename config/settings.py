@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -37,12 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'apps.teams',
     'apps.organisation',
     'apps.mails',
     'apps.schedule',
     'apps.users',
-    'apps.core'
+    'apps.core',
 ]
 
 MIDDLEWARE = [
@@ -57,10 +59,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],  # global templates folder
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,9 +112,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
@@ -122,3 +125,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/images/'
+
+STATICFIELD_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+
+X_FRAME_OPTIONS = 'SAMEORIGIN' # Allows for iframe to display 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "base"
+LOGOUT_REDIRECT_URL = "login"
