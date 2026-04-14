@@ -1,161 +1,95 @@
-<!-- Placeholder: teams page --><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Teams Directory - OpenSky</title>
-    <style>
-        /* 1. Basic Page Setup */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            height: 100vh; /* Takes up full screen height */
-        }
+{% extends 'base.html' %}
 
-        /* 2. Sidebar Styles */
-        .sidebar {
-            width: 250px;
-            background-color: #e0e0e0;
-            padding: 20px;
-            border-right: 1px solid #ccc;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-        }
-        .nav-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            background-color: #f4f4f4;
-            border: 1px solid #333;
-            border-radius: 5px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-        }
-        .nav-btn.active {
-            background-color: #ccc; /* Darker for the active 'Teams' page */
-        }
-
-        /* 3. Main Content Area */
-        .main-content {
-            flex-grow: 1; /* Takes up the rest of the space */
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 4. Header Styles */
-        .header {
-            background-color: white;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ccc;
-        }
-        .header h1 {
-            margin: 0;
-        }
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* 5. Toolbar (Search & Filters) */
-        .toolbar {
-            padding: 20px 40px;
-            display: flex;
-            gap: 20px;
-        }
-        .toolbar input, .toolbar select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .search-bar {
-            flex-grow: 1; /* Makes the search bar wider */
-            max-width: 400px;
-        }
-
-        /* 6. Grid for Team Cards */
-        .teams-grid {
-            padding: 0 40px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-            gap: 20px;
-        }
-        .card {
-            background-color: #e0e0e0;
-            height: 150px;
-            border: 1px solid #aaa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px;
-            color: #aaa;
-        }
-
-        /* 7. Footer */
-        .footer {
-            margin-top: auto; /* Pushes footer to the bottom */
-            text-align: center;
-            padding: 20px;
-            background-color: white;
-            border-top: 1px solid #ccc;
-        }
-    </style>
-</head>
-<body>
-
-    <aside class="sidebar">
-        <div class="logo">
-            <span>☒ OpenSky</span>
+{% block content %}
+<div class="container-fluid py-2">
+    <div class="mb-4 d-flex justify-content-between align-items-end">
+        <div>
+            <h2 class="mb-1">Team Directory</h2>
+            <p class="text-muted mb-0">Overview of all active teams and their critical dependencies.</p>
         </div>
-        <a href="#" class="nav-btn">Dashboard</a>
-        <a href="#" class="nav-btn active">Teams</a>
-        <a href="#" class="nav-btn">Organisation</a>
-        <a href="#" class="nav-btn">Messages</a>
-        <a href="#" class="nav-btn">Schedule</a>
-    </aside>
-
-    <main class="main-content">
         
-        <header class="header">
-            <h1>Teams Directory</h1>
-            <div class="user-profile">
-                <span>🔔</span>
-                <span>⊗ Jhon Doe ⌄</span>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control" placeholder="Search teams 🔍" style="max-width: 200px;">
+            <select class="form-select" style="max-width: 150px;">
+                <option>Filter...</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        
+        {% for team in teams %}
+        <div class="col-12 col-xl-6">
+            <div class="card h-100 shadow-sm border-0">
+                
+                <div class="card-header bg-dark text-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">{{ team.team_name }}</h5>
+                    <span class="badge {% if team.status == 'Active' %}bg-success{% else %}bg-secondary{% endif %}">{{ team.status }}</span>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-uppercase fw-bold text-muted" style="font-size: 0.75rem;">Department</small>
+                            <p class="mb-1">{{ team.department.department_name }}</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-uppercase fw-bold text-muted" style="font-size: 0.75rem;">Manager</small>
+                            <p class="mb-1">
+                                {% if team.manager_user %}
+                                    <i class="bi bi-person-fill"></i> {{ team.manager_user.username }}
+                                {% else %}
+                                    <span class="text-muted fst-italic">Unassigned</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mb-4">{{ team.purpose|truncatewords:20 }}</p>
+
+                    <div class="p-3 bg-light rounded mt-auto border">
+                        <h6 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-link-45deg"></i> Dependency Map</h6>
+
+                        <div class="row">
+                            <div class="col-md-6 border-end">
+                                <small class="text-uppercase fw-bold text-danger d-block mb-2" style="font-size: 0.7rem;">We Depend On (Upstream)</small>
+                                
+                                {% for dep in team.upstream_dependencies.all %}
+                                    <div class="badge bg-white text-dark border border-danger mb-1 text-wrap text-start w-100">
+                                        <i class="bi bi-arrow-up-right text-danger"></i> {{ dep.upstream_team.team_name }}
+                                    </div>
+                                {% empty %}
+                                    <span class="text-muted small fst-italic">No upstream dependencies.</span>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <small class="text-uppercase fw-bold text-success d-block mb-2" style="font-size: 0.7rem;">Relies On Us (Downstream)</small>
+                                
+                                {% for dep in team.downstream_dependencies.all %}
+                                    <div class="badge bg-white text-dark border border-success mb-1 text-wrap text-start w-100">
+                                        <i class="bi bi-arrow-down-right text-success"></i> {{ dep.downstream_team.team_name }}
+                                    </div>
+                                {% empty %}
+                                    <span class="text-muted small fst-italic">No downstream dependencies.</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </header>
-
-        <div class="toolbar">
-            <input type="text" class="search-bar" placeholder="Search teams 🔍">
-            <select>
-                <option>Department Filter</option>
-            </select>
-            <select>
-                <option>Sort Filter</option>
-            </select>
         </div>
-
-        <div class="teams-grid">
-            <div class="card">☒</div>
-            <div class="card">☒</div>
-            <div class="card">☒</div>
+        
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                No teams found in the database.
+            </div>
         </div>
+        {% endfor %}
 
-        <footer class="footer">
-            -------- Footer -------- Footer -------- Footer --------
-        </footer>
-
-    </main>
-
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}
