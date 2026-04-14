@@ -19,27 +19,16 @@
             </a>
 
             <!-- keeping team directory inactive until separate page is added -->
-            <a href="{% url 'teams:teams_list' %}" class="btn btn-outline-dark rounded-pill d-flex align-items-center gap-2 text-start 
+            <a href="#" class="btn btn-outline-dark rounded-pill d-flex align-items-center gap-2 text-start 
                      {% if '/teams/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-people"></i>
                 <span>Team Directory</span>
             </a>
 
-            <a href="{% url 'teams:organisation_list' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
-                    {% if '/organisations/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+            <a href="{% url 'organisation' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if '/organisation/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-building"></i>
                 <span>Organisation</span>
-            </a>
-
-            <a href="{% url 'teams:department_list' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
-                    {% if '/departments/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
-                <i class="bi bi-diagram-3"></i>
-                <span>Departments</span>
-            </a>
-            <a href="{% url 'teams:team_type_list' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
-                     {% if '/team-types/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
-                <i class="bi bi-tags"></i>
-                <span>Team Types</span>
             </a>
 
             <a href="{% url 'mails' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 

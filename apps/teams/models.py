@@ -14,7 +14,6 @@ class Department(models.Model):
     department_name = models.CharField(max_length=150)
     dept_description = models.TextField(blank=True, null=True)
     dept_leader_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='led_departments')
-    specialisation = models.CharField(max_length=150, blank=True, null=True)
 
     def __str__(self):
         return self.department_name
