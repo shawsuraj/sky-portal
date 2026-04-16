@@ -1,11 +1,11 @@
 from django.urls import path
 from . import views
 
-app_name = 'teams' 
+app_name = 'teams'
 
 urlpatterns = [
+    # 1. The main directory with search
     path('', views.views_list, name='teams_list'), 
-    path('departments/', views.department_list, name='department_list'), 
-    path('organisations/', views.organisation_list, name='organisation_list'), 
-    path('team-types/', views.team_type_list, name='team_type_list'),
+    # 2. The dynamic team hub
+    path('<int:team_id>/', views.team_detail, name='team_detail'),
 ]

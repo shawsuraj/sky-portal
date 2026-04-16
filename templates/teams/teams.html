@@ -1,95 +1,100 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container-fluid py-2">
-    <div class="mb-4 d-flex justify-content-between align-items-end">
-        <div>
-            <h2 class="mb-1">Team Directory</h2>
-            <p class="text-muted mb-0">Overview of all active teams and their critical dependencies.</p>
-        </div>
+<div class="container-fluid py-4">
+    
+    <div class="mb-4">
+        <h2 class="mb-1 fw-bold">Team Directory</h2>
+        <p class="text-muted mb-4">Explore teams you have been added to across the organisation</p>
         
-    <form method="GET" action="{% url 'teams:teams_list' %}" class="d-flex gap-2">
+        <div class="rounded-4 p-3 d-flex flex-wrap gap-3 align-items-center justify-content-between" style="background-color: #f8f9fa;">
             
-            <input type="text" name="search" value="{{ request.GET.search }}" class="form-control" placeholder="Search teams" style="max-width: 200px;">
-            
-            <select name="department" class="form-select" style="max-width: 150px;">
-                <option value="">All Departments</option>
+            <form method="GET" action="{% url 'teams:teams_list' %}" class="d-flex flex-wrap gap-3 align-items-center w-100 m-0">
                 
-                {% for dept in all_departments %}
-                    <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:"s" %}selected{% endif %}>
-                        {{ dept.department_name }}
-                    </option>
-                {% endfor %}
-            </select>
-
-            <button type="submit" class="btn btn-primary">Filter</button>
-            
-            {% if request.GET.search or request.GET.department %}
-                <a href="{% url 'teams:teams_list' %}" class="btn btn-outline-secondary">Clear</a>
-            {% endif %}
-            
-        </form>
+                <div class="input-group flex-grow-1" style="max-width: 400px;">
+                    <span class="input-group-text bg-white border-0 rounded-start-pill ps-4 pe-2"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" value="{{ request.GET.search }}" class="form-control bg-white border-0 py-2 rounded-end-pill shadow-none" placeholder="Search teams">
+                </div>
+                
+                <div class="d-flex gap-2 ms-auto">
+                    <select name="department" class="form-select bg-white border-0 py-2 px-4 rounded-pill shadow-none fw-medium" style="min-width: 180px;" onchange="this.form.submit()">
+                        <option value="">All Departments</option>
+                        {% for dept in all_departments %}
+                            <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:"s" %}selected{% endif %}>
+                                {{ dept.department_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select class="form-select bg-white border-0 py-2 px-4 rounded-pill shadow-none fw-medium" style="min-width: 150px;">
+                        <option>Sort (A-Z)</option>
+                    </select>
+                    
+                    <button type="submit" class="d-none">Filter</button>
+                    
+                    {% if request.GET.search or request.GET.department %}
+                        <a href="{% url 'teams:teams_list' %}" class="btn text-secondary border-0 fw-medium">Clear</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="row g-4">
-        
         {% for team in teams %}
-        <div class="col-12 col-xl-6">
-            <div class="card h-100 shadow-sm border-0">
-                
-                <div class="card-header bg-dark text-white border-0 py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">{{ team.team_name }}</h5>
-                    <span class="badge {% if team.status == 'Active' %}bg-success{% else %}bg-secondary{% endif %}">{{ team.status }}</span>
-                </div>
-                
-                <div class="card-body">
+        <div class="col-12 col-md-6 col-xl-4">
+            
+            <div class="card h-100 border-0 rounded-4" style="background-color: #e2e4e6;">
+                <div class="card-body p-4 d-flex flex-column">
+                    
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h4 class="fw-bold mb-0 text-dark">{{ team.team_name }}</h4>
+                        <span class="badge rounded-pill border border-dark text-dark px-3 py-1 fw-bold" style="background-color: transparent;">
+                            {{ team.status }}
+                        </span>
+                    </div>
+
+                    <p class="text-dark small mb-4" style="line-height: 1.4;">
+                        {{ team.description|truncatewords:15|default:"Lorem Ipsum is simply dummy text of the printing and typesetting industry." }}
+                    </p>
+
                     <div class="row mb-3">
                         <div class="col-6">
-                            <small class="text-uppercase fw-bold text-muted" style="font-size: 0.75rem;">Department</small>
-                            <p class="mb-1">{{ team.department.department_name }}</p>
+                            <small class="text-dark fw-bold d-block mb-1">Department</small>
+                            <span class="text-dark small">{{ team.department.department_name }}</span>
                         </div>
                         <div class="col-6">
-                            <small class="text-uppercase fw-bold text-muted" style="font-size: 0.75rem;">Manager</small>
-                            <p class="mb-1">
+                            <small class="text-dark fw-bold d-block mb-1">Leader</small>
+                            <span class="text-dark small">
                                 {% if team.manager_user %}
-                                    <i class="bi bi-person-fill"></i> {{ team.manager_user.username }}
+                                    {{ team.manager_user.first_name }} {{ team.manager_user.last_name|default:team.manager_user.username }}
                                 {% else %}
-                                    <span class="text-muted fst-italic">Unassigned</span>
+                                    Unassigned
                                 {% endif %}
-                            </p>
+                            </span>
                         </div>
                     </div>
 
-                    <p class="text-muted small mb-4">{{ team.purpose|truncatewords:20 }}</p>
-
-                    <div class="p-3 bg-light rounded mt-auto border">
-                        <h6 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-link-45deg"></i> Dependency Map</h6>
-
-                        <div class="row">
-                            <div class="col-md-6 border-end">
-                                <small class="text-uppercase fw-bold text-danger d-block mb-2" style="font-size: 0.7rem;">We Depend On (Upstream)</small>
-                                
-                                {% for dep in team.upstream_dependencies.all %}
-                                    <div class="badge bg-white text-dark border border-danger mb-1 text-wrap text-start w-100">
-                                        <i class="bi bi-arrow-up-right text-danger"></i> {{ dep.upstream_team.team_name }}
-                                    </div>
-                                {% empty %}
-                                    <span class="text-muted small fst-italic">No upstream dependencies.</span>
-                                {% endfor %}
-                            </div>
-
-                            <div class="col-md-6">
-                                <small class="text-uppercase fw-bold text-success d-block mb-2" style="font-size: 0.7rem;">Relies On Us (Downstream)</small>
-                                
-                                {% for dep in team.downstream_dependencies.all %}
-                                    <div class="badge bg-white text-dark border border-success mb-1 text-wrap text-start w-100">
-                                        <i class="bi bi-arrow-down-right text-success"></i> {{ dep.downstream_team.team_name }}
-                                    </div>
-                                {% empty %}
-                                    <span class="text-muted small fst-italic">No downstream dependencies.</span>
-                                {% endfor %}
-                            </div>
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <small class="text-dark fw-bold d-block mb-1">Members</small>
+                            <span class="text-dark small"><i class="bi bi-people me-1"></i>{{ team.members.all|length }}</span>
                         </div>
+                        <div class="col-6">
+                            <small class="text-dark fw-bold d-block mb-1">Repositories</small>
+                            <span class="text-dark small"><i class="bi bi-journal-code me-1"></i>{{ team.repositories.all|length }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <small class="text-dark fw-bold d-block mb-1">Skills</small>
+                        <p class="mb-0 text-dark small">{{ team.skills|default:"AWS/GCP, Terraform, Kubernetes, CI/CD, Docker" }}</p>
+                    </div>
+                        
+                    <div class="mt-auto pt-2">
+                        <a href="{% url 'teams:team_detail' team.id %}" class="btn border border-dark text-dark w-100 rounded-pill fw-bold hover-dark" style="background-color: transparent;">
+                            View Profile
+                        </a>
                     </div>
 
                 </div>
@@ -98,13 +103,23 @@
         
         {% empty %}
         <div class="col-12">
-            <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center">
-                <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
-                No teams found in the database.
+            <div class="card border-0 rounded-4" style="background-color: #e2e4e6;">
+                <div class="card-body p-5 text-center d-flex flex-column justify-content-center align-items-center" style="min-height: 250px;">
+                    <i class="bi bi-search text-secondary mb-3" style="font-size: 3rem;"></i>
+                    <h4 class="fw-bold text-dark mb-2">No teams found</h4>
+                    <p class="text-dark mb-0">Try clearing your search filters or ask an Admin to add teams.</p>
+                </div>
             </div>
         </div>
         {% endfor %}
-
     </div>
 </div>
+
+<style>
+    /* Button Hover Effect */
+    .hover-dark:hover {
+        background-color: #212529 !important;
+        color: white !important;
+    }
+</style>
 {% endblock %}

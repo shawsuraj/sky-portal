@@ -1,71 +1,53 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Team, Department
 
-from apps.teams.models import Department
-from apps.teams.models import Organisation
-from apps.teams.models import TeamType
-from apps.teams.models import Team
-from django.db.models import Q
-
-from django.shortcuts import render
-from .models import Department, Organisation, TeamType, Team
-from django.db.models import Q 
-
+# 1. TEAM DIRECTORY & SEARCH (Wireframe Page 7)
 def views_list(request): 
-    # 1. Base Query 
-    teams = Team.objects.select_related('department', 'team_type', 'manager_user') \
-                        .prefetch_related(
-                            'upstream_dependencies__upstream_team',
-                            'downstream_dependencies__downstream_team'
-                        )
+    # Grab all teams and pre-load everything needed for the directory cards
+    teams = Team.objects.select_related('department', 'manager_user') \
+                        .prefetch_related('members', 'repositories')
 
-    # 2. Grab the search variables from the URL
+    # Grab the search variables from the URL
     search_query = request.GET.get('search', '')
     dept_filter = request.GET.get('department', '')
 
-    # 3. Apply the Search Filter
+    # Apply the Search Filter (matches team names)
     if search_query:
         teams = teams.filter(team_name__icontains=search_query)
 
-    # 4. Apply the Department Filter
+    # Apply the Department Filter (dropdown selection)
     if dept_filter:
         teams = teams.filter(department_id=dept_filter)
 
-    # 5. Grab all departments
+    # Grab departments to populate the search dropdown menu
     all_departments = Department.objects.all()
 
     context = {
         'teams': teams,
         'all_departments': all_departments, 
     }
-
     return render(request, 'teams/teams.html', context)
 
-def department_list(request):
 
-    departments = Department.objects.select_related('organisation', 'dept_leader_user').all()
-
-    context = {
-        'departments': departments,
-    }
-
-    return render(request, 'teams/departments.html', context)
-
-def organisation_list(request):
-    organisations = Organisation.objects.prefetch_related('departments').all()
-
-    context = {
-        'organisations': organisations,
-    }
-
-    return render(request, 'teams/organisations.html', context)
-
-def team_type_list(request):
-    # Grabs all the team categories from the database
-    team_types = TeamType.objects.all()
+# 2. THE TEAM PROFILE HUB (Wireframe Page 8)
+def team_detail(request, team_id):
+    # Grabs the specific team and pre-loads ALL tab data at once:
+    # 1. Department/Manager (Header)
+    # 2. Dependencies (Dependency Tab)
+    # 3. Members & Repositories (The other tabs)
+    team = get_object_or_404(
+        Team.objects.select_related('department', 'manager_user')
+        .prefetch_related(
+            'members', 
+            'repositories',
+            'upstream_dependencies__upstream_team', 
+            'downstream_dependencies__downstream_team'
+        ),
+        id=team_id
+    )
 
     context = {
-        'team_types': team_types,
+        'team': team,
     }
 
-    return render(request, 'teams/team_types.html', context)
-
+    return render(request, 'teams/team_detail.html', context)
