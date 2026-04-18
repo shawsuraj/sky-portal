@@ -19,8 +19,8 @@
             </a>
 
             <!-- keeping team directory inactive until separate page is added -->
-            <a href="#" class="btn btn-outline-dark rounded-pill d-flex align-items-center gap-2 text-start 
-                     {% if '/teams/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+            <a href="{% url 'teams:teams_list' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if '/teams/' in request.path %}btn-primary text-white border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-people"></i>
                 <span>Team Directory</span>
             </a>
