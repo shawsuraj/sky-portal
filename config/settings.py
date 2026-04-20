@@ -30,7 +30,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -59,7 +58,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -75,13 +73,11 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -92,7 +88,6 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -111,21 +106,25 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-gb'
-
 TIME_ZONE = 'Europe/London'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/' 
+# URL used in templates for static files
+STATIC_URL = 'static/'
 
+# tells Django where your main project-level static folder is
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'  # Allows for iframe to display
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/images/'
 
 STATICFIELD_DIRS = [
@@ -139,3 +138,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images') # Where media will be store
 LOGIN_URL = "login" # Page where user must login
 LOGIN_REDIRECT_URL = "base" # Page redirection after user logs in
 LOGOUT_REDIRECT_URL = "login" # Page redirection after user logs out
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "base"
+LOGOUT_REDIRECT_URL = "login"

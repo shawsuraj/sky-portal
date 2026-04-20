@@ -1,0 +1,67 @@
+<!-- left sidebar nav - common -->
+<div class="portal-sidebar d-flex flex-column h-100">
+    <div class="portal-sidebar-inner d-flex flex-column h-100">
+        <!-- sky area -->
+        <div class="d-flex align-items-center gap-2 mb-5">
+            <i class="bi bi-cloud text-primary fs-4"></i>
+            <h4 class="m-0 fw-bold">Sky Eng</h4>
+        </div>
+
+        <p class="text-uppercase fw-bold small mb-3 text-dark">Navigation</p>
+
+        <!-- main nav links -->
+        <!-- need to connect with correct url paths - to be done individually -->
+        <nav class="d-grid gap-3">
+            <a href="#" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if request.path == '/' %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+                <i class="bi bi-house"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- keeping team directory inactive until separate page is added -->
+            <a href="{% url 'teams:teams_list' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if '/teams/' in request.path %}btn-primary text-white border-0 shadow{% else %}btn-outline-dark{% endif %}">
+                <i class="bi bi-people"></i>
+                <span>Team Directory</span>
+            </a>
+
+            <a href="{% url 'organisation' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if '/organisation/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+                <i class="bi bi-building"></i>
+                <span>Organisation</span>
+            </a>
+
+            <a href="{% url 'mails' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if '/mails/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+                <i class="bi bi-chat-left-dots"></i>
+                <span>Messages</span>
+            </a>
+
+            <a href="{% url 'schedule' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if '/schedule/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+                <i class="bi bi-calendar3"></i>
+                <span>Schedule</span>
+            </a>
+        </nav>
+
+        <!-- profile + settings + logout section -->
+        <div class="mt-auto d-grid gap-2">
+            <a href="#" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if '/profile/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+                <i class="bi bi-person"></i>
+                <span>Profile</span>
+            </a>
+
+            <a href="#" class="btn btn-outline-dark rounded-pill d-flex align-items-center gap-2 text-start
+                     {% if '/settings/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+            </a>
+
+            <a href="{% url 'logout' %}" class="text-danger fw-bold text-decoration-none px-2 pt-2">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Log Out</span>
+            </a>
+        </div>
+    </div>
+</div>
