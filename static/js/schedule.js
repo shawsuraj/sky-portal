@@ -1,46 +1,37 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    // get main elements from the page
     var calendarEl = document.getElementById('calendar');
     var form = document.getElementById('meetingForm');
-    var upcoming = document.getElementById('upcomingMeetings');
     var openButton = document.getElementById('openScheduleBtn');
-    var noMeetingsText = document.getElementById('noMeetingsText');
-
-    var titleInput = document.getElementById('meetingTitle');
     var dateInput = document.getElementById('meetingDate');
-    var timeInput = document.getElementById('meetingTime');
 
+    // create bootstrap modal
     var modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
 
-    var savedMeetings = JSON.parse(localStorage.getItem('meetings')) || [];
+    // get today's date in YYYY-MM-DD format
+    var today = new Date().toISOString().split('T')[0];
 
+    // stop user picking past dates in the form
+    dateInput.min = today;
+
+    // open modal and optionally fill selected date
     function openModal(selectedDate = '') {
         form.reset();
-        dateInput.value = selectedDate;
+        dateInput.min = today;
+
+        if (selectedDate) {
+            if (selectedDate < today) {
+                alert('You cannot create a meeting before today.');
+                return;
+            }
+            dateInput.value = selectedDate;
+        }
+
         modal.show();
     }
 
-    function updateNoMeetingsText() {
-        if (upcoming.children.length > 0) {
-            noMeetingsText.style.display = 'none';
-        } else {
-            noMeetingsText.style.display = 'block';
-        }
-    }
-
-    function addMeetingToUI(meeting, index) {
-        upcoming.insertAdjacentHTML('beforeend', `
-            <div class="card mb-2 p-2 meeting-card" data-index="${index}">
-                <strong>${meeting.title}</strong><br>
-                Date: ${meeting.date}<br>
-                Time: ${meeting.time}<br>
-                <button class="btn btn-danger btn-sm mt-2 remove-btn">Remove</button>
-            </div>
-        `);
-
-        updateNoMeetingsText();
-    }
-
+    // create FullCalendar
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
 
@@ -50,90 +41,29 @@ document.addEventListener('DOMContentLoaded', function () {
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
 
+        // meetings already saved in the database
         events: meetingsFromDjango,
 
+        // open modal when a calendar date is clicked
         dateClick: function (info) {
             openModal(info.dateStr);
         }
     });
 
+    // render calendar
     calendar.render();
 
-    savedMeetings.forEach(function (meeting, index) {
-        calendar.addEvent({
-            id: String(index),
-            title: meeting.title,
-            start: meeting.dateTime
-        });
-
-        addMeetingToUI(meeting, index);
-    });
-
+    // open popup when the button under the calendar is clicked
     openButton.addEventListener('click', function () {
         openModal();
     });
 
+    // stop form submit if the date is before today
     form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        var meeting = {
-            title: titleInput.value,
-            date: dateInput.value,
-            time: timeInput.value,
-            dateTime: dateInput.value + 'T' + timeInput.value
-        };
-
-        var index = savedMeetings.length;
-
-        calendar.addEvent({
-            id: String(index),
-            title: meeting.title,
-            start: meeting.dateTime
-        });
-
-        addMeetingToUI(meeting, index);
-
-        savedMeetings.push(meeting);
-        localStorage.setItem('meetings', JSON.stringify(savedMeetings));
-
-        modal.hide();
-        form.reset();
-    });
-
-    upcoming.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-btn')) {
-            var card = e.target.closest('.meeting-card');
-            var index = parseInt(card.getAttribute('data-index'));
-
-            card.remove();
-
-            var event = calendar.getEventById(String(index));
-            if (event) {
-                event.remove();
-            }
-
-            savedMeetings.splice(index, 1);
-            localStorage.setItem('meetings', JSON.stringify(savedMeetings));
-
-            updateNoMeetingsText();
-            location.reload();
+        if (dateInput.value < today) {
+            e.preventDefault();
+            alert('You cannot create a meeting before today.');
         }
     });
-
-    updateNoMeetingsText();
-
-});
-// REMOVE BUTTON (works properly)
-document.getElementById('upcomingMeetings').addEventListener('click', function (e) {
-
-    if (e.target.classList.contains('remove-btn')) {
-
-        // get the meeting card
-        var card = e.target.closest('.meeting-card');
-
-        // remove from UI
-        card.remove();
-
-    }
 
 });
