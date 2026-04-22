@@ -1,73 +1,81 @@
-<!-- Placeholder: mails page -->
-<html>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <style>
-.container{
-    display: flex;
-}
-        .side-navigation{
-            width:10%;
-            border: 1px solid #ccc;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox</title>
+
+    <!-- # shared mails styles -->
+    <link rel="stylesheet" href="{% static 'css/mails.css' %}">
+    
+    <script>
+        // # show selected inbox message on the right
+        function showMessage(subject, sender, content, time){
+            document.getElementById("msg-subject").innerText = subject;
+            document.getElementById("msg-sender").innerText = sender;
+            document.getElementById("msg-time").innerText = time;
+            document.getElementById("msg-content").innerText = content;
         }
-
-        .side-navigation a{
-            background-color: #b3e0ff;
-            border: 4px solid white;
-        }
-
-        .side-navigation a:hover{
-            border: 4px solid black;
-        }
-
-        .side-navigation a.active{
-            background-color: #77a3c0;
-        }           
-
-
-.inbox{
-            width:35%;
-            border: 1px solid #ccc;
-            padding: 20px;
-}
-.content{
-               width:50%;
-            border: 1px solid #ccc;
-            padding: 20px; 
-}
-
-    </style>
+    </script>
 </head>
-    <body>
-        <h1> INBOX </h1>
+<body>
 
-        <p>HERE ARE YOUR MESSAGES:</p>
+    <!-- # left navigation -->
+    <div class="side-nav">
+        <h3>Messages</h3>
 
-<div class="container">
+        <a href="{% url 'inbox' %}" class="active">Inbox</a>
+        <a href="{% url 'sent_message' %}">View Sent</a>
+        <a href="{% url 'view_draft' %}">View Drafts</a>
+        <a href="{% url 'compose_message' %}">+ Compose New Message</a>
+    </div>
 
-<div class="side-navigation">
+    <!-- # middle inbox list -->
+    <div class="message-list">
+        <div class="message-list-header">Inbox</div>
 
-<a href="{% url 'compose_message' %}">Compose</a>
-<br>
-<a href="{% url 'inbox' %}" class="active">Inbox</a>
-<br>
-<a href="{% url 'sent_message' %}">Sent</a>
-<br>
-<a href="{% url 'view_draft' %}">Draft</a>
-<br>
+        {% for message in messages %}
+            <div class="message-item"
+                 onclick="showMessage(
+                    '{{ message.subject|escapejs }}',
+                    '{{ message.sender.username|escapejs }}',
+                    '{{ message.content|escapejs }}',
+                    '{{ message.timestamp|date:'Y-m-d H:i'|escapejs }}'
+                 )">
 
-</div>
+                <strong>{{ message.sender.username }}</strong>
+                {{ message.subject }}<br>
 
+                <small>
+                    {{ message.timestamp|date:"Y-m-d H:i" }}
+                </small>
+            </div>
+        {% empty %}
+            <p class="empty">No messages.</p>
+        {% endfor %}
+    </div>
 
+    <!-- # right selected message content -->
+    <div class="content">
+        <h2 id="msg-subject">Select a message</h2>
 
-         
-        <div class="inbox">Inbox</div>
+        <div class="meta">
+            <strong>From:</strong>
+            <span id="msg-sender"></span>
+        </div>
 
-        <div class="content">Content</div>
+        <div class="meta">
+            <strong>Time:</strong>
+            <span id="msg-time"></span>
+        </div>
 
-</div>
-        
-    </body>
+        <hr>
+
+        <div id="msg-content" class="message-box">
+            Message content will appear here.
+        </div>
+    </div>
+
+</body>
 </html>
