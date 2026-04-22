@@ -165,10 +165,10 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Team</label>
-                        <select class="form-select rounded-3" name="team_name" required>
+                        <select class="form-select rounded-3" name="team_id" required>
                             <option value="">Select a team</option>
                             {% for team in teams %}
-                                <option value="{{ team }}">{{ team }}</option>
+                                <option value="{{ team.id }}">{{ team.team_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
