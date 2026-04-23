@@ -7,7 +7,9 @@
                 class="form-control rounded-start-3 portal-search-input"
                 placeholder="Search teams , departments , or managers ..."
             >
-            <span class="input-group-text bg-white border-2 border-start-0 border-dark rounded-end-3"><i class="bi bi-search"></i></span>
+            <span class="input-group-text bg-white border-2 border-start-0 border-dark rounded-end-3">
+                <i class="bi bi-search"></i>
+            </span>
         </div>
     </div>
 
@@ -16,9 +18,23 @@
 
         <div class="d-flex align-items-center gap-2">
             <span class="profile-avatar"></span>
+
             <div class="lh-1">
-                <div class="fw-semibold">Jhon Doe</div>
-                <small class="text-primary">Software Engineer</small>
+                <div class="fw-semibold">
+                    {% if request.user.first_name %}
+                        {{ request.user.first_name }} {{ request.user.last_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </div>
+
+                <small class="text-primary">
+                    {% if request.user.is_authenticated and request.user.profile %}
+                        {{ request.user.profile.role }}
+                    {% else %}
+                        User
+                    {% endif %}
+                </small>
             </div>
         </div>
     </div>
