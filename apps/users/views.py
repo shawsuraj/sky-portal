@@ -80,3 +80,19 @@ def update_profile(request):
 
     context = {'form': form}
     return render(request, 'users/update_profile.html', context)
+
+# shows the logged-in user's profile page
+
+@login_required(login_url="login")
+
+def view_profile(request):
+
+    profile = Profile.objects.get(user=request.user)
+
+    context = {
+
+        "profile": profile
+
+    }
+
+    return render(request, "users/view_profile.html", context)

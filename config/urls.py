@@ -32,6 +32,7 @@ urlpatterns = [
     path('logout/', userview.logout_view, name='logout'),
     path('users/signup/', userview.signup_view, name='signup'),
     path('users/update_profile/', userview.update_profile, name='update_profile'),
+    path('users/view_profile/', userview.view_profile, name='view_profile'),
     path('schedule/', include('apps.schedule.urls')),
     path('organisation/', include('apps.organisation.urls')),
 
