@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Profile</title>
+
+    <style>
+
+        /* page background */
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f6f9;
+            margin:0;
+        }
+
+        /* profile container box */
+        .profile-container{
+            width:300px;
+            margin:100px auto;
+            background:white;
+            padding:20px;
+            border:1px solid #ccc;
+        }
+
+        /* page heading */
+        .header{
+            text-align:center;
+            color:#1a73e8;
+        }
+
+        /* profile image */
+        .profile-pic{
+            width:100px;
+            height:100px;
+            object-fit:cover;
+            border-radius:50%;
+            display:block;
+            margin:20px auto;
+        }
+
+        /* profile info section */
+        .profile-info p{
+            margin:10px 0;
+        }
+
+        /* update button */
+        .update-btn{
+            width:100%;
+            padding:8px;
+            background:#1a73e8;
+            color:white;
+            border:none;
+            text-decoration:none;
+            display:block;
+            text-align:center;
+            margin-top:20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+
+    <!-- heading -->
+    <div class="header">
+        <h1>My Profile</h1>
+    </div>
+
+    <!-- profile picture -->
+    {% if profile.profile_pic %}
+        <img src="{{ profile.profile_pic.url }}" class="profile-pic">
+    {% else %}
+        <p style="text-align:center;">No profile picture uploaded</p>
+    {% endif %}
+
+    <!-- profile details -->
+    <div class="profile-info">
+        <p><strong>Username:</strong> {{ profile.user.username }}</p>
+        <p><strong>Name:</strong> {{ profile.name }}</p>
+        <p><strong>Email:</strong> {{ profile.email }}</p>
+        <p><strong>Phone:</strong> {{ profile.phone }}</p>
+        <p><strong>Date Created:</strong> {{ profile.date_created }}</p>
+    </div>
+
+    <!-- update profile button -->
+    <a href="{% url 'update_profile' %}" class="update-btn">
+        Update Profile
+    </a>
+
+    <a href="{% url 'logout' %}">
+    <button>Logout</button>
+    </a>
+
+</div>
+
+</body>
+</html>
