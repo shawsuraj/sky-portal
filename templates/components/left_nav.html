@@ -46,7 +46,7 @@
 
         <!-- profile + settings + logout section -->
         <div class="mt-auto d-grid gap-2">
-            <a href="#" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+            <a href="{% url 'view_profile' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
                      {% if '/profile/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
