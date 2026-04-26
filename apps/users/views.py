@@ -74,11 +74,13 @@ def update_profile(request):
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect("base")
+            return redirect("view_profile")
     else:
         form = ProfileForm(instance=profile)
 
-    context = {'form': form}
+        
+
+    context = {'form': form, "active_page": "profile"}
     return render(request, 'users/update_profile.html', context)
 
 # shows the logged-in user's profile page
@@ -91,7 +93,8 @@ def view_profile(request):
 
     context = {
 
-        "profile": profile
+        "profile": profile,
+        "active_page": "profile"
 
     }
 

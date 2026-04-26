@@ -49,7 +49,7 @@
                     '{{ message.timestamp|date:'Y-m-d H:i'|escapejs }}'
                  )">
 
-                <strong>{{ message.receiver.username }}</strong>
+                <strong>To: {{ message.receiver.username }}</strong>
                 {{ message.subject }}<br>
 
                 <small>
