@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .profile-frame {
+        width: 100%;
+        height: 750px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        background: white;
+    }
+</style>
+
+<div class="p-4">
+
+    <iframe
+        name="profileFrame"
+        id="profileFrame"
+        class="profile-frame"
+        src="{% url 'view_profile' %}">
+    </iframe>
+</div>
+
+{% endblock %}

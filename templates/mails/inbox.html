@@ -7,7 +7,7 @@
     <title>Inbox</title>
 
     <!-- # shared mails styles -->
-    <link rel="stylesheet" href="{% static 'css/mails.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mails.css' %}?v=2">
     
     <script>
         // # show selected inbox message on the right
@@ -25,10 +25,12 @@
     <div class="side-nav">
         <h3>Messages</h3>
 
+        <a href="{% url 'compose_message' %}" class="compose">+ New Message</a>
+
         <a href="{% url 'inbox' %}" class="active">Inbox</a>
         <a href="{% url 'sent_message' %}">View Sent</a>
         <a href="{% url 'view_draft' %}">View Drafts</a>
-        <a href="{% url 'compose_message' %}">+ Compose New Message</a>
+        
     </div>
 
     <!-- # middle inbox list -->
@@ -44,7 +46,7 @@
                     '{{ message.timestamp|date:'Y-m-d H:i'|escapejs }}'
                  )">
 
-                <strong>{{ message.sender.username }}</strong>
+                <strong>From: {{ message.sender.username }}</strong>
                 {{ message.subject }}<br>
 
                 <small>

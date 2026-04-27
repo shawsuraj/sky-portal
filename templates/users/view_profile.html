@@ -1,99 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Profile</title>
 
-    <style>
+{% load static %}
 
-        /* page background */
-        body{
-            font-family: Arial, sans-serif;
-            background:#f4f6f9;
-            margin:0;
-        }
 
-        /* profile container box */
-        .profile-container{
-            width:300px;
-            margin:100px auto;
-            background:white;
-            padding:20px;
-            border:1px solid #ccc;
-        }
 
-        /* page heading */
-        .header{
-            text-align:center;
-            color:#1a73e8;
-        }
+<style>
 
-        /* profile image */
-        .profile-pic{
-            width:100px;
-            height:100px;
-            object-fit:cover;
-            border-radius:50%;
-            display:block;
-            margin:20px auto;
-        }
+    body{
+    font-family: Arial, sans-serif;
+    background: white;
+    margin:0;
+}
 
-        /* profile info section */
-        .profile-info p{
-            margin:10px 0;
-        }
+    .profile-page {
+        padding: 24px;
+    }
 
-        /* update button */
-        .update-btn{
-            width:100%;
-            padding:8px;
-            background:#1a73e8;
-            color:white;
-            border:none;
-            text-decoration:none;
-            display:block;
-            text-align:center;
-            margin-top:20px;
-        }
+    /* profile card */
+    .profile-container {
+        max-width: 420px;
+        margin: 60px auto;
+        background: white;
+        padding: 24px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+    }
 
-    </style>
-</head>
-<body>
+    /* heading */
+    .header {
+        text-align: center;
+        color: #1a73e8;
+    }
 
-<div class="profile-container">
+    /* profile image */
+    .profile-pic {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: 20px auto;
+    }
 
-    <!-- heading -->
-    <div class="header">
-        <h1>My Profile</h1>
+    /* profile details */
+    .profile-info p {
+        margin: 10px 0;
+    }
+
+    /* buttons */
+    .update-btn{
+        width: 100%;
+        padding: 10px;
+        color: white;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        margin-top: 12px;
+        border-radius: 6px;
+    }
+
+    .update-btn {
+        background: #1a73e8;
+    }
+
+</style>
+
+<div class="profile-page">
+
+    <div class="profile-container">
+
+        <!-- Heading -->
+        <div class="header">
+            <h1>My Profile</h1>
+        </div>
+
+        <!-- Profile picture -->
+        {% if profile.profile_pic %}
+            <img src="{{ profile.profile_pic.url }}" class="profile-pic">
+        {% else %}
+            <p style="text-align:center;">No profile picture uploaded</p>
+        {% endif %}
+
+        <!-- Profile details -->
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ profile.user.username }}</p>
+            <p><strong>Name:</strong> {{ profile.name }}</p>
+            <p><strong>Email:</strong> {{ profile.email }}</p>
+            <p><strong>Phone:</strong> {{ profile.phone }}</p>
+            <p><strong>Date Created:</strong> {{ profile.date_created }}</p>
+        </div>
+
+        <!-- Update profile -->
+        <a href="{% url 'update_profile' %}" class="update-btn">
+            Update Profile
+        </a>
+
     </div>
-
-    <!-- profile picture -->
-    {% if profile.profile_pic %}
-        <img src="{{ profile.profile_pic.url }}" class="profile-pic">
-    {% else %}
-        <p style="text-align:center;">No profile picture uploaded</p>
-    {% endif %}
-
-    <!-- profile details -->
-    <div class="profile-info">
-        <p><strong>Username:</strong> {{ profile.user.username }}</p>
-        <p><strong>Name:</strong> {{ profile.name }}</p>
-        <p><strong>Email:</strong> {{ profile.email }}</p>
-        <p><strong>Phone:</strong> {{ profile.phone }}</p>
-        <p><strong>Date Created:</strong> {{ profile.date_created }}</p>
-    </div>
-
-    <!-- update profile button -->
-    <a href="{% url 'update_profile' %}" class="update-btn">
-        Update Profile
-    </a>
-
-    <a href="{% url 'logout' %}">
-    <button>Logout</button>
-    </a>
 
 </div>
 
-</body>
-</html>
