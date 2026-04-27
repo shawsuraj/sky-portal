@@ -35,5 +35,5 @@ urlpatterns = [
     path('users/view_profile/', userview.view_profile, name='view_profile'),
     path('schedule/', include('apps.schedule.urls')),
     path('organisation/', include('apps.organisation.urls')),
-
+    path('teams/', include('apps.teams.urls')),
 ]
