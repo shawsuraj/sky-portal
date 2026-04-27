@@ -61,10 +61,10 @@ def schedule(request):
 
         return redirect('schedule')
 
-    # Only show meetings created by the logged-in user
-    # OR meetings where the logged-in user is an attendee
+    # Only show meetings where the logged-in user is still an attendee
+    # If the user cancels the meeting, it only disappears from their own schedule
     meetings = Meeting.objects.filter(
-        Q(created_by=request.user) | Q(attendees__user=request.user)
+        attendees__user=request.user
     ).distinct().order_by('meeting_datetime')
 
     return render(request, 'schedule/index.html', {
@@ -75,14 +75,15 @@ def schedule(request):
 
 @login_required
 def delete_meeting(request, meeting_id):
-    # Only the creator of the meeting can delete/cancel it
-    meeting = get_object_or_404(
-        Meeting,
-        id=meeting_id,
-        created_by=request.user
-    )
+    # Cancel only removes the meeting from the logged-in user's own schedule
+    # It does not delete the meeting for everyone else
+    meeting = get_object_or_404(Meeting, id=meeting_id)
 
+    # Only cancel/remove it when the form sends a POST request
     if request.method == 'POST':
-        meeting.delete()
+        MeetingAttendee.objects.filter(
+            meeting=meeting,
+            user=request.user
+        ).delete()
 
     return redirect('schedule')
