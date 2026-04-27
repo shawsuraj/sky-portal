@@ -135,7 +135,6 @@ X_FRAME_OPTIONS = 'SAMEORIGIN' # Allows for iframe to display
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = "/media/"
-
 MEDIA_ROOT = BASE_DIR / "media"
 
 LOGIN_URL = "login" # Page where user must login

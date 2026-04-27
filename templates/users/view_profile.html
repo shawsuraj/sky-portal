@@ -1,9 +1,16 @@
-{% extends 'base.html' %}
+
 {% load static %}
 
-{% block content %}
+
 
 <style>
+
+    body{
+    font-family: Arial, sans-serif;
+    background: white;
+    margin:0;
+}
+
     .profile-page {
         padding: 24px;
     }
@@ -40,8 +47,7 @@
     }
 
     /* buttons */
-    .update-btn,
-    .logout-btn {
+    .update-btn{
         width: 100%;
         padding: 10px;
         color: white;
@@ -56,9 +62,6 @@
         background: #1a73e8;
     }
 
-    .logout-btn {
-        background: #dc3545;
-    }
 </style>
 
 <div class="profile-page">
@@ -91,13 +94,7 @@
             Update Profile
         </a>
 
-        <!-- Logout -->
-        <a href="{% url 'logout' %}" class="logout-btn">
-            Logout
-        </a>
-
     </div>
 
 </div>
 
-{% endblock %}

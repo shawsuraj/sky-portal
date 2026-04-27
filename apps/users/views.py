@@ -81,7 +81,7 @@ def update_profile(request):
         
 
     context = {'form': form, "active_page": "profile"}
-    return render(request, 'users/update_profile.html', context)
+    return render(request, "users/update_profile.html", context)
 
 # shows the logged-in user's profile page
 
@@ -99,3 +99,7 @@ def view_profile(request):
     }
 
     return render(request, "users/view_profile.html", context)
+
+@login_required(login_url="login")
+def profile(request):
+    return render(request, "users/profile.html", {"active_page": "profile"})
