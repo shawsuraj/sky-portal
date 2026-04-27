@@ -22,4 +22,5 @@ urlpatterns = [
     path('mails/', include('apps.mails.urls')),
     path('schedule/', include('apps.schedule.urls')),
     path('organisation/', include('apps.organisation.urls')),
+    path('teams/', include('apps.teams.urls')),
 ]
