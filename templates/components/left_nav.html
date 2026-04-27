@@ -12,14 +12,13 @@
         <!-- main nav links -->
         <!-- need to connect with correct url paths - to be done individually -->
         <nav class="d-grid gap-3">
-            <a href="#" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+            <a href="{% url 'home' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start
                      {% if request.path == '/' %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-house"></i>
                 <span>Dashboard</span>
             </a>
 
-            <!-- keeping team directory inactive until separate page is added -->
-            <a href="{% url 'teams:teams_list' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+            <a href="{% url 'teams:teams_list' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start
                      {% if '/teams/' in request.path %}btn-primary text-white border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-people"></i>
                 <span>Team Directory</span>
