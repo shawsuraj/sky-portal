@@ -4,8 +4,9 @@ from .models import Team, Department
 # 1. TEAM DIRECTORY & SEARCH (Wireframe Page 7)
 def views_list(request): 
     # Grab all teams and pre-load everything needed for the directory cards
+    # FIXED: members M2M is gone, now prefetch team_members (the new TeamMember table) and their users
     teams = Team.objects.select_related('department', 'manager_user') \
-                        .prefetch_related('members', 'repositories')
+                        .prefetch_related('team_members__user', 'repositories')
 
     # Grab the search variables from the URL
     search_query = request.GET.get('search', '')
@@ -35,12 +36,13 @@ def team_detail(request, team_id):
     # 1. Department/Manager (Header)
     # 2. Dependencies (Dependency Tab)
     # 3. Members & Repositories (The other tabs)
+    # FIXED: members M2M is gone, prefetch team_members__user instead
     team = get_object_or_404(
         Team.objects.select_related('department', 'manager_user')
         .prefetch_related(
-            'members', 
+            'team_members__user',
             'repositories',
-            'upstream_dependencies__upstream_team', 
+            'upstream_dependencies__upstream_team',
             'downstream_dependencies__downstream_team'
         ),
         id=team_id
