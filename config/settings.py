@@ -54,7 +54,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # this makes every page require login by default - no need to add @login_required everywhere
+    'django.contrib.auth.middleware.LoginRequiredMiddleware',
 ]
+
+# where unauthenticated users get sent
+LOGIN_URL = 'login'
 
 ROOT_URLCONF = 'config.urls'
 
