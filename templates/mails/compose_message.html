@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compose New Message</title>
+
+    <!-- # shared mails styles -->
+    <link rel="stylesheet" href="{% static 'css/mails.css' %}?v=2">
+</head>
+<body>
+
+    <!-- # left navigation -->
+    <div class="side-nav">
+        <h3>Messages</h3>
+        <a href="{% url 'compose_message' %}" class="compose_active">+ New Message</a>
+
+        <a href="{% url 'inbox' %}" >Inbox</a>
+        <a href="{% url 'sent_message' %}">View Sent</a>
+        <a href="{% url 'view_draft' %}" >View Drafts</a>
+    </div>
+
+    <!-- # middle helper section -->
+    <div class="message-list">
+        <div class="message-list-header">Compose</div>
+
+        <div style="padding:15px;">
+            <p>Create a new message here.</p>
+            <p>You can send it now or save it as a draft.</p>
+        </div>
+    </div>
+
+    <!-- # right form section -->
+    <div class="content">
+        <h2>Compose New Message</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="buttons">
+                <button type="submit" name="send_message" class="send-btn">
+                    Send
+                </button>
+
+                <button type="submit" name="save_draft" class="draft-btn">
+                    Save as Draft
+                </button>
+
+                <a href="{% url 'inbox' %}" class="cancel-btn">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

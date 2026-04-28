@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-content p-4">
+    <div class="row g-4 align-items-start">
+
+        <!-- LEFT SIDE -->
+        <div class="col-lg-9">
+
+            <!-- Calendar -->
+            <div class="calendar-box p-3 mb-3 border border-2 rounded-4 shadow-sm bg-white">
+                <div id="calendar"></div>
+            </div>
+
+            <!-- Schedule button -->
+            <button type="button" class="btn btn-primary px-4 py-2 fw-semibold rounded-3 mt-2" id="openScheduleBtn">
+                + Schedule Meeting
+            </button>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="col-lg-3">
+
+            <div class="upcoming-box p-3 border border-2 rounded-4 shadow-sm bg-white">
+                <h5 class="fw-bold mb-3">Upcoming Schedule</h5>
+
+                <div id="upcomingMeetings">
+
+                    {% for meeting in meetings %}
+                        <div class="card mb-3 rounded-4 shadow-sm overflow-hidden">
+                            <div class="d-flex">
+
+                                <!-- DATE BLOCK -->
+                                <div class="bg-primary text-white d-flex flex-column justify-content-center align-items-center px-3 py-4">
+                                    <div class="fw-bold small text-uppercase">
+                                        {{ meeting.meeting_datetime|date:"b" }}
+                                    </div>
+                                    <div class="fw-bold fs-4">
+                                        {{ meeting.meeting_datetime|date:"d" }}
+                                    </div>
+                                </div>
+
+                                <!-- MEETING CONTENT -->
+                                <div class="flex-grow-1 p-3">
+                                    <div class="fw-bold">{{ meeting.title }}</div>
+
+                                    <div class="text-muted small mb-2">
+                                        {{ meeting.agenda_message|default:"with : backend team"|truncatechars:35 }}
+                                    </div>
+
+                                    <div class="small text-secondary mb-2 d-flex flex-wrap gap-3">
+                                        <span>🕒 {{ meeting.meeting_datetime|time:"H:i" }}</span>
+                                        <span>👥 6 Attendees</span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <span class="badge rounded-pill text-dark px-3 py-2" style="background-color: #f4b183;">
+                                            {{ meeting.platform }}
+                                        </span>
+                                    </div>
+
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary rounded-3"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#meetingModal{{ meeting.id }}"
+                                        >
+                                            See More
+                                        </button>
+
+                                        <form method="POST" action="{% url 'delete_meeting' meeting.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-3">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="meetingModal{{ meeting.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content rounded-4 shadow">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ meeting.title }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <p><strong>Date:</strong> {{ meeting.meeting_datetime|date:"Y-m-d" }}</p>
+                                        <p><strong>Time:</strong> {{ meeting.meeting_datetime|time:"H:i" }}</p>
+                                        <p><strong>Team:</strong> {{ meeting.team_name }}</p>
+                                        <p><strong>Platform:</strong> {{ meeting.platform }}</p>
+                                        <p><strong>Message:</strong> {{ meeting.agenda_message|default:"No message" }}</p>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <p id="noMeetingsText" class="mb-0 text-muted" {% if meetings %}style="display:none;"{% endif %}>
+                        No meetings yet.
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- CREATE MEETING MODAL -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+
+            <form id="meetingForm" method="POST">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Schedule Meeting</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Title</label>
+                        <input
+                            type="text"
+                            class="form-control rounded-3"
+                            name="title"
+                            placeholder="Enter meeting title"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Date</label>
+                        <input
+                            type="date"
+                            class="form-control rounded-3"
+                            id="meetingDate"
+                            name="meeting_date"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Time</label>
+                        <input
+                            type="time"
+                            class="form-control rounded-3"
+                            name="meeting_time"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Team</label>
+                        <select class="form-select rounded-3" name="team_id" required>
+                            <option value="">Select a team</option>
+                            {% for team in teams %}
+                                <option value="{{ team.id }}">{{ team.team_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Meeting Location</label>
+                        <select class="form-select rounded-3" name="platform" required>
+                            <option value="">Select a meeting location</option>
+                            <option value="Zoom">Zoom</option>
+                            <option value="Microsoft Teams">Microsoft Teams</option>
+                            <option value="Google Meet">Google Meet</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Message</label>
+                        <textarea
+                            class="form-control rounded-3"
+                            name="agenda_message"
+                            rows="3"
+                            placeholder="Enter message (optional)"
+                        ></textarea>
+                    </div>
+
+                    
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary px-4 rounded-3">Confirm</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var meetingsFromDjango = [
+        {% for meeting in meetings %}
+        {
+            title: "{{ meeting.title|escapejs }}",
+            start: "{{ meeting.meeting_datetime|date:'c' }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
+<script src="{% static 'js/schedule.js' %}?v=6"></script>
+{% endblock %}

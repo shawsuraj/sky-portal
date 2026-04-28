@@ -1,0 +1,52 @@
+/* page background and removes default browser spacing */
+body {
+    background: #f5f6f8;
+    margin: 0;
+}
+
+/* main content area beside the sidebar */
+.main-content {
+    flex: 1;
+    padding: 25px !important;
+}
+
+/* calendar container/card styling */
+.calendar-box {
+    background: white;
+    border-radius: 14px;
+    border: 2px solid #333;
+    min-height: 520px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* upcoming meetings container/card styling */
+.upcoming-box {
+    background: white;
+    border-radius: 14px;
+    border: 2px solid #333;
+    min-height: 520px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* controls the calendar width and height */
+#calendar {
+    width: 100%;
+    min-height: 460px;
+}
+
+/* schedule meeting button styling */
+.schedule-btn {
+    background: #1787ff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 28px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* changes button colour when the user hovers over it */
+.schedule-btn:hover {
+    background: #0f76e6;
+    color: white;
+}

@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- org map page - took ages to get vis.js working lol -->
+
+<style>
+    /* the graph canvas - dark bg looks better trust me */
+    #myNetwork {
+        width: 100%;
+        height: 550px;
+        background-color: #0f1724;
+        border-radius: 8px;
+    }
+
+    /* card hover thing */
+    .team-card:hover {
+        box-shadow: 0 3px 10px rgba(0,0,0,.15);
+        cursor: pointer;
+    }
+
+    /* active view button - had to use important bc bootstrap kept overriding */
+    .active-view {
+        background-color: #0d6efd !important;
+        color: white !important;
+    }
+
+    /* legend dots in the map overlay */
+    .legend-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+</style>
+
+
+<div class="mb-3">
+    <h4 class="fw-bold">Organisation Map</h4>
+    <p class="text-muted">Visualise team integrations and dependencies.</p>
+</div>
+
+<!-- buttons row - view toggle + export + search all in one line -->
+<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+
+    <!-- grid/network switch -->
+    <button id="btnGrid" class="btn btn-outline-primary" onclick="showGrid()">
+        <i class="bi bi-grid-3x3-gap me-1"></i>Grid View
+    </button>
+    <button id="btnNet" class="btn btn-primary" onclick="showNetwork()">
+        <i class="bi bi-diagram-3 me-1"></i>Network View
+    </button>
+
+    <button class="btn btn-primary" onclick="doExport()">
+        <i class="bi bi-download me-1"></i>Export
+    </button>
+
+    <!-- search - pushed to right with ms-auto -->
+    <div class="ms-auto" style="min-width:260px;">
+        <input type="text" id="searchBox" class="form-control" placeholder="Search teams or dependencies...">
+    </div>
+
+</div>
+
+<!-- filters + zoom + stats row -->
+<div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+
+    <!-- zoom buttons only show in network view -->
+    <div class="btn-group btn-group-sm" id="zoomBtns">
+        <button class="btn btn-outline-secondary" onclick="zoomIn()"><i class="bi bi-plus-lg"></i></button>
+        <button class="btn btn-outline-secondary" onclick="zoomOut()"><i class="bi bi-dash-lg"></i></button>
+        <button class="btn btn-outline-secondary" onclick="fitAll()"><i class="bi bi-arrows-fullscreen"></i></button>
+        <!-- this toggles the physics simulation - it's cool -->
+        <button class="btn btn-outline-secondary" id="physBtn" onclick="togglePhysics()">
+            <i class="bi bi-arrow-repeat"></i>
+        </button>
+    </div>
+
+    <select id="deptFilter" class="form-select form-select-sm" style="max-width:190px;" onchange="reloadGraph()">
+        <option value="">All Departments</option>
+        {% for dept in departments %}
+        <option value="{{ dept.department_name }}">{{ dept.department_name }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- this gets filled in by js after the data loads -->
+    <select id="depTypeFilter" class="form-select form-select-sm" style="max-width:210px;" onchange="reloadGraph()">
+        <option value="">All Dependency Types</option>
+    </select>
+
+    <span class="ms-auto text-muted small">
+        Teams: <strong id="teamCount">{{ team_count }}</strong>
+        &nbsp; Dependencies: <strong id="depCount">{{ dep_count }}</strong>
+    </span>
+
+</div>
+
+
+<!-- NETWORK VIEW -->
+<div id="networkView">
+    <div class="card shadow-sm mb-3 border-0">
+        <div class="card-body p-0 position-relative">
+
+            <div id="myNetwork"></div>
+
+            <!-- spinner while loading -->
+            <div id="loadingSpinner" class="position-absolute top-50 start-50 translate-middle text-center text-white">
+                <div class="spinner-border text-primary mb-2" role="status"></div>
+                <p class="small mb-0">Loading...</p>
+            </div>
+
+            <!-- legend box - bottom right, bg white so it stands out on dark bg -->
+            <div class="position-absolute bottom-0 end-0 m-3 bg-white rounded p-2 shadow-sm" style="font-size:0.8rem; min-width:150px;">
+                <p class="fw-bold mb-2 small">Legend</p>
+                {% for s in dept_summaries %}
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="legend-dot" data-colour="{{ s.colour }}"></span>
+                    <span>{{ s.name }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- LIST VIEW - hidden at start, shows instead of network -->
+<div id="gridView" style="display:none;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+
+            <!-- table -->
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:6px;" class="p-0"></th>  <!-- colour strip -->
+                        <th class="ps-3">Team</th>
+                        <th>Department</th>
+                        <th>Leader</th>
+                        <th>Skills</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams %}
+                    <!-- row-wrapper lets the js search/filter hide whole rows -->
+                    <tr class="card-wrapper"
+                        data-name="{{ team.team_name|lower }}"
+                        data-dept="{{ team.department.department_name }}">
+
+                        <!-- coloured left strip - js picks up data-dept-colour same as before -->
+                        <td class="p-0 border-0">
+                            <div data-dept-colour="{{ team.department.department_name }}"
+                                 style="width:5px; height:100%; min-height:48px;"></div>
+                        </td>
+
+                        <td class="ps-3 fw-semibold">{{ team.team_name }}</td>
+                        <td class="text-muted small">{{ team.department.department_name }}</td>
+                        <td class="text-muted small">{{ team.leader_name|default:"—" }}</td>
+                        <td class="text-muted small">{{ team.skills|default:"—"|truncatechars:45 }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-success-subtle text-success border">{{ team.status }}</span>
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">No teams in the database yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- side panel that pops out when you click a node -->
+<div class="offcanvas offcanvas-end" id="teamSidePanel" tabindex="-1" style="width:350px;">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="sidePanelTitle">Team</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body" id="sidePanelBody">
+        <!-- js fills this in -->
+    </div>
+</div>
+
+
+<!-- dept colours passed from django - reading it in js below -->
+<script id="deptColours" type="application/json">{{ dept_colours_json|safe }}</script>
+
+<!-- vis network from cdn - way easier than installing locally -->
+<script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+
+<script>
+
+// grab the colours map
+const COLOURS = JSON.parse(document.getElementById('deptColours').textContent)
+
+// vis.js stuff
+let net = null
+let nodes = []
+let edges = []
+let physicsEnabled = true
+
+const canvas = document.getElementById('myNetwork')
+const nodesSet = new vis.DataSet()
+const edgesSet = new vis.DataSet()
+
+// i played around with these settings a lot, this feels the best
+const visOptions = {
+    physics: {
+        enabled: true,
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+            gravitationalConstant: -55,
+            centralGravity: 0.01,
+            springLength: 130,
+            springConstant: 0.05,
+            damping: 0.4
+        },
+        stabilization: { iterations: 120 }
+    },
+    interaction: {
+        hover: true,
+        tooltipDelay: 150,
+        keyboard: true
+    },
+    edges: { width: 1.5, selectionWidth: 3 },
+    nodes: { borderWidth: 2, shadow: true }
+}
+
+function setupNetwork() {
+    net = new vis.Network(canvas, { nodes: nodesSet, edges: edgesSet }, visOptions)
+
+    // hide spinner when done loading
+    net.on('stabilizationIterationsDone', function() {
+        document.getElementById('loadingSpinner').style.display = 'none'
+        net.setOptions({ physics: { enabled: false } })
+        physicsEnabled = false
+    })
+
+    // clicking a node - open the side panel
+    net.on('click', function(e) {
+        if (e.nodes.length > 0) {
+            openPanel(nodesSet.get(e.nodes[0]))
+        }
+    })
+}
+
+// fetch graph json from django
+function fetchAndRender(dept='', depType='') {
+    document.getElementById('loadingSpinner').style.display = 'block'
+
+    let url = "{% url 'org_graph_data' %}"
+    let params = new URLSearchParams()
+    if (dept) params.set('dept', dept)
+    if (depType) params.set('dep_type', depType)
+    if (params.toString()) url += '?' + params.toString()
+
+    fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            nodes = data.nodes
+            edges = data.edges
+
+            fillDepTypeDropdown(edges)
+
+            nodesSet.clear()
+            edgesSet.clear()
+            nodesSet.add(nodes)
+            edgesSet.add(edges)
+
+            document.getElementById('teamCount').textContent = nodes.length
+            document.getElementById('depCount').textContent = edges.length
+
+            colourCards()  // update grid cards too
+
+            if (!net) setupNetwork()
+
+            document.getElementById('loadingSpinner').style.display = 'none'
+        })
+        .catch(err => {
+            console.log('fetch failed:', err)
+            document.getElementById('loadingSpinner').style.display = 'none'
+        })
+}
+
+// fill dep type dropdown from edge data
+function fillDepTypeDropdown(edgeList) {
+    const sel = document.getElementById('depTypeFilter')
+    const current = sel.value
+    while (sel.options.length > 1) sel.remove(1)
+
+    // get unique types
+    const types = [...new Set(edgeList.map(e => e.label))].sort()
+    types.forEach(t => {
+        const o = document.createElement('option')
+        o.value = t
+        o.textContent = t
+        sel.add(o)
+    })
+    if (current) sel.value = current
+}
+
+// colour the list strips - runs after data loads
+// data-dept-colour is on a <div> inside the first <td> now (table list view)
+function colourCards() {
+    document.querySelectorAll('[data-dept-colour]').forEach(el => {
+        const deptName = el.getAttribute('data-dept-colour')
+        const c = COLOURS[deptName] || '#6c757d'
+        el.style.background = c
+    })
+}
+
+// view switching
+function showGrid() {
+    document.getElementById('networkView').style.display = 'none'
+    document.getElementById('gridView').style.display = 'block'
+    document.getElementById('zoomBtns').style.display = 'none'
+    document.getElementById('btnGrid').classList.add('active-view')
+    document.getElementById('btnNet').classList.remove('active-view', 'btn-primary')
+    document.getElementById('btnNet').classList.add('btn-outline-primary')
+}
+
+function showNetwork() {
+    document.getElementById('networkView').style.display = 'block'
+    document.getElementById('gridView').style.display = 'none'
+    document.getElementById('zoomBtns').style.display = 'flex'
+    document.getElementById('btnNet').classList.add('active-view')
+    document.getElementById('btnGrid').classList.remove('active-view')
+    document.getElementById('btnGrid').classList.remove('btn-primary')
+}
+
+function reloadGraph() {
+    const dept = document.getElementById('deptFilter').value
+    const dep = document.getElementById('depTypeFilter').value
+    fetchAndRender(dept, dep)
+
+    // also filter grid cards
+    filterCards()
+}
+
+// search input handler
+document.getElementById('searchBox').addEventListener('input', function() {
+    const q = this.value.toLowerCase()
+    const dept = document.getElementById('deptFilter').value
+
+    filterCards(dept, q)
+
+    // highlight matching nodes in vis
+    if (net) {
+        const matched = nodes.filter(n => n.label.toLowerCase().includes(q)).map(n => n.id)
+        net.selectNodes(matched)
+        if (matched.length === 1) net.focus(matched[0], { scale: 1.3, animation: true })
+    }
+})
+
+function filterCards(dept='', q='') {
+    document.querySelectorAll('.card-wrapper').forEach(el => {
+        const name = el.getAttribute('data-name')
+        const d = el.getAttribute('data-dept')
+        const matchQ = !q || name.includes(q)
+        const matchD = !dept || d === dept
+        // tr needs 'table-row' to show, divs just need ''
+        const showVal = el.tagName === 'TR' ? 'table-row' : ''
+        el.style.display = (matchQ && matchD) ? showVal : 'none'
+    })
+}
+
+// zoom helpers
+function zoomIn()  { if (net) net.moveTo({ scale: net.getScale() * 1.3, animation: true }) }
+function zoomOut() { if (net) net.moveTo({ scale: net.getScale() * 0.77, animation: true }) }
+function fitAll()  { if (net) net.fit({ animation: true }) }
+
+function togglePhysics() {
+    physicsEnabled = !physicsEnabled
+    if (net) net.setOptions({ physics: { enabled: physicsEnabled } })
+    document.getElementById('physBtn').classList.toggle('btn-primary', physicsEnabled)
+}
+
+// export - grabs the canvas directly
+function doExport() {
+    if (!net) return
+    const c = canvas.querySelector('canvas')
+    if (!c) return
+    const a = document.createElement('a')
+    a.download = 'org-map.png'
+    a.href = c.toDataURL('image/png')
+    a.click()
+}
+
+// open the offcanvas side panel with team info
+function openPanel(node) {
+    if (!node) return
+
+    const downstream = edges.filter(e => e.from === node.id).map(e => {
+        const t = nodes.find(n => n.id === e.to)
+        return t ? `<li class="mb-1">${t.label} <span class="badge bg-secondary">${e.label}</span></li>` : ''
+    }).join('')
+
+    const upstream = edges.filter(e => e.to === node.id).map(e => {
+        const s = nodes.find(n => n.id === e.from)
+        return s ? `<li class="mb-1">${s.label} <span class="badge bg-info text-dark">${e.label}</span></li>` : ''
+    }).join('')
+
+    document.getElementById('sidePanelBody').innerHTML = `
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span style="width:14px;height:14px;border-radius:50%;background:${node.color.background};display:inline-block;"></span>
+            <h5 class="mb-0 fw-bold">${node.label}</h5>
+        </div>
+        <p class="text-muted small"><strong>Department:</strong> ${node.dept}</p>
+        <div class="border-top pt-3 mt-2">${node.title}</div>
+        <div class="mt-3">
+            <h6>Dependencies</h6>
+            ${downstream ? '<p class="small fw-bold mb-1">Downstream</p><ul class="small">' + downstream + '</ul>' : ''}
+            ${upstream   ? '<p class="small fw-bold mb-1">Upstream</p><ul class="small">' + upstream   + '</ul>' : ''}
+            ${!downstream && !upstream ? '<p class="text-muted small">None in current filter.</p>' : ''}
+        </div>
+    `
+
+    document.getElementById('sidePanelTitle').textContent = node.label
+    new bootstrap.Offcanvas(document.getElementById('teamSidePanel')).show()
+}
+
+// kick it all off on page load
+window.addEventListener('DOMContentLoaded', function() {
+    // colour the legend dots from data- attr so CSS linter doesnt complain
+    document.querySelectorAll('.legend-dot').forEach(el => {
+        el.style.background = el.dataset.colour || '#6c757d'
+    })
+    fetchAndRender()
+    colourCards()
+    showNetwork()  // default to network view
+})
+
+</script>
+
+{% endblock %}

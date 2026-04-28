@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draft Messages</title>
+
+    <!-- # shared mails styles -->
+    <link rel="stylesheet" href="{% static 'css/mails.css' %}?v=2">
+
+    <script>
+        // # show selected draft and reveal action buttons
+        function showDraft(id, subject, receiver, content, time){
+            document.getElementById("msg-subject").innerText = subject;
+            document.getElementById("msg-receiver").innerText = receiver;
+            document.getElementById("msg-time").innerText = time;
+            document.getElementById("msg-content").innerText = content;
+
+            document.getElementById("edit-link").href = "/mails/edit_draft/" + id + "/";
+            document.getElementById("draft-id").value = id;
+            document.getElementById("draft-actions").style.display = "flex";
+        }
+    </script>
+</head>
+<body>
+
+    <!-- # left navigation -->
+    <div class="side-nav">
+        <h3>Messages</h3>
+
+        <a href="{% url 'compose_message' %}"  class="compose">+ New Message</a>
+
+        <a href="{% url 'inbox' %}" >Inbox</a>
+        <a href="{% url 'sent_message' %}" >View Sent</a>
+        <a href="{% url 'view_draft' %}" class="active">View Drafts</a>
+    </div>
+
+    <!-- # middle draft list -->
+    <div class="message-list">
+        <div class="message-list-header">Draft Messages</div>
+
+        {% for message in messages %}
+            <div class="message-item"
+                 onclick="showDraft(
+                    '{{ message.id }}',
+                    '{{ message.subject|escapejs }}',
+                    '{{ message.receiver.username|escapejs }}',
+                    '{{ message.content|escapejs }}',
+                    '{{ message.timestamp|date:'Y-m-d H:i'|escapejs }}'
+                 )">
+
+                <strong>To: {{ message.receiver.username }}</strong>
+                {{ message.subject }}<br>
+
+                <small>
+                    {{ message.timestamp|date:"Y-m-d H:i" }}
+                </small>
+            </div>
+        {% empty %}
+            <p class="empty">No draft messages.</p>
+        {% endfor %}
+    </div>
+
+    <!-- # right selected draft content -->
+    <div class="content">
+        <h2 id="msg-subject">Select a draft</h2>
+
+        <div class="meta">
+            <strong>To:</strong>
+            <span id="msg-receiver"></span>
+        </div>
+
+        <div class="meta">
+            <strong>Saved:</strong>
+            <span id="msg-time"></span>
+        </div>
+
+        <hr>
+
+        <div id="msg-content" class="message-box">
+            Draft content will appear here.
+        </div>
+
+        <!-- # hidden until a draft is selected -->
+        <div id="draft-actions" class="draft-actions" style="display:none;">
+            <a id="edit-link" href="#" class="edit-btn">Edit Draft</a>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="draft_id" id="draft-id">
+                <button type="submit" name="delete_draft" class="delete-btn">
+                    Delete Draft
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

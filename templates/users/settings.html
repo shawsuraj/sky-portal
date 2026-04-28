@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Settings</h2>
+        <p class="text-dark">Manage profile preferences, operational alerts, and security controls.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-8">
+            <div class="card border border-dark rounded-4" style="background-color: transparent;">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="bi bi-person-vcard fs-5 me-2 fw-bold text-dark"></i>
+                        <h6 class="fw-bold mb-0 text-dark">Profile Preferences</h6>
+                    </div>
+                    <p class="text-dark small mb-4">Update your account identity and display configuration.</p>
+
+                    <form>
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary text-uppercase mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">First Name</label>
+                                <input type="text" class="form-control bg-light border-0 rounded-pill py-2 px-3 shadow-none text-muted fw-medium" value="{{ request.user.first_name|default:'Jhon' }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary text-uppercase mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">Last Name</label>
+                                <input type="text" class="form-control bg-light border-0 rounded-pill py-2 px-3 shadow-none text-muted fw-medium" value="{{ request.user.last_name|default:'Doe' }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary text-uppercase mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">Timezone</label>
+                                <select class="form-select bg-light border-0 rounded-pill py-2 px-3 shadow-none text-muted fw-medium">
+                                    <option selected>Europe/London (BST)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary text-uppercase mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">Language</label>
+                                <select class="form-select bg-light border-0 rounded-pill py-2 px-3 shadow-none text-muted fw-medium">
+                                    <option selected>English (UK)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn text-dark fw-medium rounded-pill py-2 px-4 shadow-sm" style="background-color: #d1d3d4;">Save Profile Preferences</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="w-100 h-100" style="background-color: #d1d3d4; min-height: 350px;"></div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    <div class="mb-4">
+        <span class="badge mb-2 px-3 py-2 rounded-pill border border-dark text-dark" style="background-color: transparent;">
+            {{ team.status }}
+        </span>
+        <h2 class="fw-bold mb-1">{{ team.team_name }}</h2>
+        <p class="text-muted">Department: <strong class="text-dark">{{ team.department.department_name }}</strong></p>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-12 col-lg-8">
+            
+            <ul class="nav nav-tabs mb-4 border-bottom-2" id="teamTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active text-dark fw-bold border-0 border-bottom border-primary border-3 bg-transparent" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <!-- FIXED: was team.members.all - M2M is gone, now using TeamMember table -->
+                    <button class="nav-link text-muted fw-bold border-0 bg-transparent" id="members-tab" data-bs-toggle="tab" data-bs-target="#members" type="button" role="tab">Members ({{ team.team_members.all|length }})</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-muted fw-bold border-0 bg-transparent" id="repos-tab" data-bs-toggle="tab" data-bs-target="#repos" type="button" role="tab">Repositories</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-muted fw-bold border-0 bg-transparent" id="dependencies-tab" data-bs-toggle="tab" data-bs-target="#dependencies" type="button" role="tab">Dependencies</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="teamTabsContent">
+                
+                <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                    <h5 class="fw-bold mb-3">About the Team</h5>
+                    <p class="text-muted mb-4" style="line-height: 1.7;">{{ team.description|default:"No description provided." }}</p>
+                    
+                    <h5 class="fw-bold mb-3">Core Responsibilities</h5>
+                    <p class="text-muted mb-4" style="line-height: 1.7;">{{ team.purpose|default:"Delivering high-quality engineering solutions for Sky." }}</p>
+
+                    <h5 class="fw-bold mb-3">Skills</h5>
+                    <p class="text-dark fw-medium">{{ team.skills|default:"AWS/GCP, Terraform, Kubernetes, CI/CD, Docker" }}</p>
+                </div>
+
+                <div class="tab-pane fade" id="members" role="tabpanel">
+                    <h5 class="fw-bold mb-4">Team Members</h5>
+                    <!-- FIXED: was looping team.members.all (old M2M), now looping team_members which is the TeamMember table -->
+                    <!-- access the actual user via membership.user, and now we also have membership.role -->
+                    <div class="row g-3">
+                        {% for membership in team.team_members.all %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded-4 border">
+                                <i class="bi bi-person-circle fs-3 me-3 text-secondary"></i>
+                                <div>
+                                    <p class="mb-0 fw-bold text-dark">{{ membership.user.first_name }} {{ membership.user.last_name|default:membership.user.username }}</p>
+                                    <small class="text-muted">{{ membership.role|default:membership.user.email }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No members assigned to this team yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="repos" role="tabpanel">
+                    <h5 class="fw-bold mb-4">Repositories ({{ team.repositories.all|length }})</h5>
+                    <div class="list-group list-group-flush">
+                        {% for repo in team.repositories.all %}
+                        <div class="list-group-item bg-transparent border-0 ps-0 mb-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-journal-code fs-4 text-primary me-3"></i>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ repo.repo_name }}</h6>
+                                        <small class="text-muted">Last updated: {{ repo.last_updated|date:"M d, Y" }}</small>
+                                    </div>
+                                </div>
+                                <a href="{{ repo.repo_url|default:'#' }}" class="btn btn-sm btn-outline-dark rounded-pill">Open Repo</a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No repositories linked to this team yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="dependencies" role="tabpanel">
+                    <h5 class="fw-bold mb-4">System Dependencies</h5>
+                    <div class="row g-4">
+                        <div class="col-md-6 border-end">
+                            <h6 class="text-uppercase fw-bold text-danger mb-3" style="font-size: 0.8rem;">Upstream (Depends On)</h6>
+                            {% for dep in team.upstream_dependencies.all %}
+                                <div class="alert alert-light border border-danger text-dark py-2 mb-2">
+                                    {{ dep.upstream_team.team_name }}
+                                </div>
+                            {% empty %}
+                                <p class="text-muted fst-italic">None</p>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase fw-bold text-success mb-3" style="font-size: 0.8rem;">Downstream (Relies On Us)</h6>
+                            {% for dep in team.downstream_dependencies.all %}
+                                <div class="alert alert-light border border-success text-dark py-2 mb-2">
+                                    {{ dep.downstream_team.team_name }}
+                                </div>
+                            {% empty %}
+                                <p class="text-muted fst-italic">None</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="mb-4">
+                <a href="{% url 'mails' %}" class="btn btn-primary w-100 mb-3 rounded-pill py-2 shadow-sm"><i class="bi bi-envelope-fill me-2"></i>Message</a>
+                <a href="{% url 'schedule' %}" class="btn btn-outline-dark w-100 mb-5 rounded-pill py-2"><i class="bi bi-calendar-event me-2"></i>Schedule Meeting</a>
+            </div>
+
+            <div class="mb-5">
+                <h6 class="text-uppercase text-muted fw-bold small mb-3">Key Contacts</h6>
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-person-circle fs-2 text-secondary me-3"></i>
+                    <div>
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Engineering Manager</small>
+                        <p class="mb-0 fw-bold">
+                            {% if team.manager_user %}
+                                {{ team.manager_user.first_name }} {{ team.manager_user.last_name|default:team.manager_user.username }}
+                            {% else %}
+                                Unassigned
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-light rounded-4 border-0">
+                <h6 class="text-uppercase text-muted fw-bold small mb-3">Quick Links</h6>
+                <!-- FIXED: these were all href="#" - now using the actual url fields from the db -->
+                <ul class="list-unstyled mb-0 d-grid gap-3">
+                    <li><a href="{{ team.wiki_url|default:'#' }}" class="text-decoration-none text-dark fw-medium"><i class="bi bi-file-earmark-text text-primary me-3"></i>Team Documentation</a></li>
+                    <li><a href="{{ team.jira_board_url|default:'#' }}" class="text-decoration-none text-dark fw-medium"><i class="bi bi-kanban text-primary me-3"></i>Jira Board</a></li>
+                    <li class="border-top pt-3"><a href="#" class="text-decoration-none text-muted small"><i class="bi bi-envelope-at me-2"></i>{{ team.team_name|lower|cut:" " }}@sky.com</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const tabs = document.querySelectorAll('#teamTabs .nav-link');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => {
+                    t.classList.remove('active', 'text-dark', 'border-bottom', 'border-primary', 'border-3');
+                    t.classList.add('text-muted');
+                });
+                this.classList.remove('text-muted');
+                this.classList.add('active', 'text-dark', 'border-bottom', 'border-primary', 'border-3');
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- dashboard - main landing page after login -->
+
+<!-- page heading + quick action buttons -->
+<div class="mb-4">
+    <h1 class="fw-bold mb-1">Engineering Control Center</h1>
+    <p class="text-muted mb-3">Overview of the Sky Engineering organisation.</p>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'organisation' %}" class="btn btn-primary">
+            <i class="bi bi-diagram-3 me-1"></i> View Org Map
+        </a>
+        <a href="{% url 'mails' %}" class="btn btn-primary">
+            <i class="bi bi-chat-left-dots me-1"></i> Contact Team
+        </a>
+        <a href="{% url 'schedule' %}" class="btn btn-primary">
+            <i class="bi bi-calendar3 me-1"></i> Schedule Meeting
+        </a>
+    </div>
+</div>
+
+<!-- stat cards - 4 across on desktop, 2x2 on mobile -->
+<div class="row g-3 mb-4">
+
+    <!-- total teams - green -->
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0" style="background:#d4edda;">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Total Teams</p>
+                <h2 class="fw-bold mb-0" style="color:#155724;">{{ total_teams }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- departments - yellow -->
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0" style="background:#fff3cd;">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Departments</p>
+                <h2 class="fw-bold mb-0" style="color:#856404;">{{ total_depts }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- unread messages - red -->
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0" style="background:#f8d7da;">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Unread Messages</p>
+                <h2 class="fw-bold mb-0" style="color:#842029;">{{ unread_msgs }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- notifications - no model yet so hardcoded 0 for now -->
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0" style="background:#ffe5b4;">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Unread Notifications</p>
+                <h2 class="fw-bold mb-0" style="color:#7d4e00;">0</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- recently visited teams - no tracking yet so just showing first 3 from db -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">Recently Visited Teams</h5>
+
+        <div class="row g-3">
+            {% for team in recent_teams %}
+            <div class="col-12 col-md-4">
+                <a href="{% url 'teams:team_detail' team.id %}" class="text-decoration-none text-dark">
+                    <div class="p-3 rounded border bg-light h-100"
+                         style="transition: box-shadow .15s;"
+                         onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,.12)'"
+                         onmouseout="this.style.boxShadow='none'">
+
+                        <h6 class="fw-semibold mb-1">{{ team.team_name }}</h6>
+
+                        <!-- show the manager as leader if one is assigned -->
+                        {% if team.manager_user %}
+                        <p class="small mb-2">
+                            <strong>Leader:</strong> {{ team.manager_user.get_full_name|default:team.manager_user.username }}
+                        </p>
+                        {% endif %}
+
+                        <!-- department badge -->
+                        <span class="badge bg-secondary-subtle border text-secondary rounded-pill">
+                            <i class="bi bi-people me-1"></i>{{ team.department.department_name }}
+                        </span>
+
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-muted small mb-0">No teams yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- recent activity - last few messages the logged-in user received -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3">Recent Activities</h5>
+
+        {% for msg in recent_activity %}
+        <div class="d-flex justify-content-between align-items-start p-3 rounded border mb-2 bg-light">
+            <div>
+                <p class="fw-semibold mb-0 small">{{ msg.subject|truncatechars:60 }}</p>
+                <p class="text-muted mb-0 small">{{ msg.content|truncatechars:80 }}</p>
+            </div>
+            <div class="text-end text-nowrap ms-3">
+                <p class="small text-muted mb-0">{{ msg.timestamp|timesince }} ago</p>
+                <p class="small text-muted mb-0">{{ msg.sender.get_full_name|default:msg.sender.username }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted small mb-0">No recent messages.</p>
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}

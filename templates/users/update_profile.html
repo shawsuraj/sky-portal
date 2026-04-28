@@ -1,0 +1,95 @@
+
+{% load static %}
+
+
+
+<style>
+
+    body{
+    font-family: Arial, sans-serif;
+    background: white;
+    margin:0;
+}
+
+    .profile-page{
+        padding: 24px;
+    }
+
+    .profile-container{
+        max-width: 420px;
+        margin: 60px auto;
+        background: white;
+        padding: 24px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+    }
+
+    .header{
+        text-align: center;
+        color: #1a73e8;
+    }
+
+    form p{
+        margin: 10px 0;
+    }
+
+    input,
+    textarea,
+    select{
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    .update-btn{
+        width: 100%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        background: #1a73e8;
+        color: white;
+        border: none;
+        margin-top: 12px;
+        border-radius: 6px;
+    }
+
+    .return-btn{
+    display: block;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: #e81a1a;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 12px;
+    border-radius: 6px;
+}
+</style>
+
+<div class="profile-page">
+    <div class="profile-container">
+
+        <div class="header">
+            <h1>Update Profile</h1>
+        </div>
+
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="update-btn">
+                Update Profile
+            </button>
+
+
+            <!-- Update profile -->
+            <a href="{% url 'view_profile' %}" class="return-btn">
+                Return
+            </a>
+
+
+        </form>
+
+    </div>
+</div>
+

@@ -1,0 +1,102 @@
+{% load static %}
+
+<!-- this page is loaded inside an iframe in profile.html - thats why it doesnt extend base.html -->
+<!-- dont add base.html here or youll get a sidebar inside a sidebar lol -->
+
+<style>
+
+    body{
+    font-family: Arial, sans-serif;
+    background: white;
+    margin:0;
+}
+
+    .profile-page {
+        padding: 24px;
+    }
+
+    /* profile card */
+    .profile-container {
+        max-width: 420px;
+        margin: 60px auto;
+        background: white;
+        padding: 24px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+    }
+
+    /* heading */
+    .header {
+        text-align: center;
+        color: #1a73e8;
+    }
+
+    /* profile image */
+    .profile-pic {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: 20px auto;
+    }
+
+    /* profile details */
+    .profile-info p {
+        margin: 10px 0;
+    }
+
+    /* buttons */
+    .update-btn{
+        width: 100%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        color: white;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        margin-top: 12px;
+        border-radius: 6px;
+    }
+
+    .update-btn {
+        background: #1a73e8;
+    }
+
+</style>
+
+<div class="profile-page">
+
+    <div class="profile-container">
+
+        <!-- Heading -->
+        <div class="header">
+            <h1>My Profile</h1>
+        </div>
+
+        <!-- Profile picture -->
+        {% if profile.profile_pic %}
+            <img src="{{ profile.profile_pic.url }}" class="profile-pic">
+        {% else %}
+            <p style="text-align:center;">No profile picture uploaded</p>
+        {% endif %}
+
+        <!-- Profile details -->
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ profile.user.username }}</p>
+            <p><strong>Forename:</strong> {{ profile.forename }}</p>
+            <p><strong>Surname:</strong> {{ profile.surname }}</p>
+            <p><strong>Email:</strong> {{ profile.email }}</p>
+            <p><strong>Phone:</strong> {{ profile.phone }}</p>
+            <p><strong>Date Created:</strong> {{ profile.date_created }}</p>
+        </div>
+
+        <!-- Update profile -->
+        <a href="{% url 'update_profile' %}" class="update-btn">
+            Update Profile
+        </a>
+
+    </div>
+
+</div>
+

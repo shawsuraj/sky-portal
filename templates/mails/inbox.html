@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox</title>
+
+    <!-- # shared mails styles -->
+    <link rel="stylesheet" href="{% static 'css/mails.css' %}?v=2">
+    
+    <script>
+        // # show selected inbox message on the right
+        function showMessage(subject, sender, content, time){
+            document.getElementById("msg-subject").innerText = subject;
+            document.getElementById("msg-sender").innerText = sender;
+            document.getElementById("msg-time").innerText = time;
+            document.getElementById("msg-content").innerText = content;
+        }
+    </script>
+</head>
+<body>
+
+    <!-- # left navigation -->
+    <div class="side-nav">
+        <h3>Messages</h3>
+
+        <a href="{% url 'compose_message' %}" class="compose">+ New Message</a>
+
+        <a href="{% url 'inbox' %}" class="active">Inbox</a>
+        <a href="{% url 'sent_message' %}">View Sent</a>
+        <a href="{% url 'view_draft' %}">View Drafts</a>
+        
+    </div>
+
+    <!-- # middle inbox list -->
+    <div class="message-list">
+        <div class="message-list-header">Inbox</div>
+
+        {% for message in messages %}
+            <div class="message-item"
+                 onclick="showMessage(
+                    '{{ message.subject|escapejs }}',
+                    '{{ message.sender.username|escapejs }}',
+                    '{{ message.content|escapejs }}',
+                    '{{ message.timestamp|date:'Y-m-d H:i'|escapejs }}'
+                 )">
+
+                <strong>From: {{ message.sender.username }}</strong>
+                {{ message.subject }}<br>
+
+                <small>
+                    {{ message.timestamp|date:"Y-m-d H:i" }}
+                </small>
+            </div>
+        {% empty %}
+            <p class="empty">No messages.</p>
+        {% endfor %}
+    </div>
+
+    <!-- # right selected message content -->
+    <div class="content">
+        <h2 id="msg-subject">Select a message</h2>
+
+        <div class="meta">
+            <strong>From:</strong>
+            <span id="msg-sender"></span>
+        </div>
+
+        <div class="meta">
+            <strong>Time:</strong>
+            <span id="msg-time"></span>
+        </div>
+
+        <hr>
+
+        <div id="msg-content" class="message-box">
+            Message content will appear here.
+        </div>
+    </div>
+
+</body>
+</html>

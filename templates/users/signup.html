@@ -1,0 +1,98 @@
+<html>
+
+<head>
+
+    <style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+}
+
+.signup-container{
+    width:400px;
+    margin:10px auto;
+    padding:20px;
+
+}
+
+h1{
+    text-align:center;
+    color:#1a73e8;
+}
+
+input{
+    width:100%;
+    padding:8px;
+    margin-top:5px;
+    margin-bottom:5px;
+    border:1px solid #ccc;
+}
+
+input[type="submit"]{
+    width:100%;
+    padding:10px;
+    background:#1a73e8;
+    color:black;
+    border:2px solid black;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+input[type="submit"]:hover{
+    background:#1558b0;
+    color: white;
+}
+
+.message{
+    color:#1a73e8;
+}
+
+.login-button{
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: black;
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    border: 2px solid black;
+    border-radius: 6px;
+    background:#1a73e8;
+}
+
+.login-button:hover{
+    background:#1558b0;
+    color: white;
+
+}
+    </style>
+
+</head>
+
+<body>
+    
+<div class="signup-container">
+
+<h1>Sign Up</h1>
+
+<form method="POST" action="">
+  {% csrf_token %}
+  {{form.as_p}}
+
+  <input type="submit" name="Create User">
+</form>
+
+{{form.errors}}
+
+<br>
+<br>
+
+<p>already have an account?<p> <a href="{% url 'login'%}" class="login-button">log in</a>
+
+</div>
+
+</body>
+
+</html>
