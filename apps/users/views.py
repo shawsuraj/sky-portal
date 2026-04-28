@@ -26,9 +26,11 @@ def signup_view(request):
 
             Profile.objects.create( # Profile = user + extra details/attributes
                 user=user,
-                email=user.email,
-                name=user.username
-            )
+                forename=form.cleaned_data.get("forename"),
+                surname=form.cleaned_data.get("surname"),
+                email=form.cleaned_data.get("email"),
+                phone=form.cleaned_data.get("phone"),
+            ) 
 
             username = form.cleaned_data.get('username')
             messages.success(request, 'Account was successfully created for ' + username) # Message
@@ -69,7 +71,6 @@ def update_profile(request):
         user=request.user,
         defaults={
             "email": request.user.email,
-            "name": request.user.username,
         }
     )
 
