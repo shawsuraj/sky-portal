@@ -77,7 +77,8 @@ def update_profile(request):
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect("view_profile")
+            # redirect to profile (full page with sidebar) not view_profile which is bare iframe content
+            return redirect("profile")
     else:
         form = ProfileForm(instance=profile)
 
