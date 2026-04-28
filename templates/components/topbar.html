@@ -29,11 +29,8 @@
                 </div>
 
                 <small class="text-primary">
-                    {% if request.user.is_authenticated and request.user.profile %}
-                        {{ request.user.profile.role }}
-                    {% else %}
-                        User
-                    {% endif %}
+                    <!-- Profile model doesnt have a role field yet so just show a static label for now -->
+                    Software Engineer
                 </small>
             </div>
         </div>

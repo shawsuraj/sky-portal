@@ -97,7 +97,7 @@
                                         <p><strong>Team:</strong> {{ meeting.team_name }}</p>
                                         <p><strong>Platform:</strong> {{ meeting.platform }}</p>
                                         <p><strong>Message:</strong> {{ meeting.agenda_message|default:"No message" }}</p>
-                                        <p><strong>Created By:</strong> {{ meeting.created_by_name|default:"Unknown" }}</p>
+                                       
                                     </div>
                                 </div>
                             </div>
@@ -193,15 +193,7 @@
                         ></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Created By</label>
-                        <input
-                            type="text"
-                            class="form-control rounded-3"
-                            name="created_by_name"
-                            placeholder="Enter your name"
-                        >
-                    </div>
+                    
 
                 </div>
 

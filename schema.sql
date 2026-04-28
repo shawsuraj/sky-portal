@@ -199,4 +199,4 @@ INSERT INTO Team_Member VALUES (8,'U049','CI/CD Engineer');
 INSERT INTO Team_Member VALUES (8,'U050','Rollback Engineer');
 
 COMMIT;
-PRAGMA foreign_keys = ON; just tewll if fine or not and stuff and i think tream memebr should be right? like 1 team leader then each 5 engineers for it right ? just explain man and stuff 
+PRAGMA foreign_keys = ON; 
