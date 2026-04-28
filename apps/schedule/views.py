@@ -85,17 +85,14 @@ def schedule(request):
         'teams': teams,
     })
 
-
-# FIXED: added login_url="login" to match the rest of the project
 @login_required(login_url="login")
 def delete_meeting(request, meeting_id):
-    # Cancel only removes the meeting from the logged-in user's own schedule
-    # It does NOT delete the meeting from database entirely
-
-    # Get meeting object safely
     meeting = get_object_or_404(Meeting, id=meeting_id)
 
-    # Only cancel/remove it when the form sends a POST request
     if request.method == 'POST':
+        MeetingAttendee.objects.filter(
+            meeting=meeting,
+            user=request.user
+        ).delete()
 
     return redirect('schedule')
