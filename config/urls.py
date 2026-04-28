@@ -24,6 +24,7 @@ urlpatterns = [
     path('schedule/', include('apps.schedule.urls')),
     path('organisation/', include('apps.organisation.urls')),
     path('teams/', include('apps.teams.urls')),
+    path('users/', include('apps.users.urls')),
 ]
 
 from django.conf import settings

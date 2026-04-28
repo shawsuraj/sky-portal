@@ -100,6 +100,11 @@ def view_profile(request):
 
     return render(request, "users/view_profile.html", context)
 
+
+@login_required(login_url="login")
+def settings_view(request):
+    return render(request, 'users/settings.html') 
+  
 @login_required(login_url="login")
 def profile(request):
     return render(request, "users/profile.html", {"active_page": "profile"})
