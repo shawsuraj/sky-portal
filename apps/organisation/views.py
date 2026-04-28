@@ -2,94 +2,107 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse
 
-# fake data for now - will swap to DB once we agree on models
-# just enough to test the vis.js chart is working
+from apps.teams.models import Team, Department, TeamDependency
 
-FAKE_DEPARTMENTS = [
-    {"name": "Frontend",   "colour": "#3498db"},
-    {"name": "Backend",    "colour": "#2ecc71"},
-    {"name": "DevOps",     "colour": "#9b59b6"},
-    {"name": "Mobile",     "colour": "#f39c12"},
-]
+# one colour per department - these match the actual dept names loaded from the excel
+# picked colours that look decent on the dark vis.js canvas
+DEPT_COLOURS = {
+    "xTV_Web":          "#e74c3c",
+    "Native TVs":       "#3498db",
+    "Mobile":           "#f39c12",
+    "Reliability_Tool": "#9b59b6",
+    "Arch":             "#2ecc71",
+    "Programme":        "#f1c40f",
+}
 
-FAKE_TEAMS = [
-    {"id": 1, "name": "Core Team",      "dept": "Backend",   "leader": "Alice Brown",  "skills": "Python, Django"},
-    {"id": 2, "name": "Frontend Team",  "dept": "Frontend",  "leader": "James Carter", "skills": "React, TypeScript"},
-    {"id": 3, "name": "API Squad",      "dept": "Backend",   "leader": "Sara Lee",     "skills": "REST, GraphQL"},
-    {"id": 4, "name": "DevOps Crew",    "dept": "DevOps",    "leader": "Tom Hughes",   "skills": "Kubernetes, Docker"},
-    {"id": 5, "name": "iOS Team",       "dept": "Mobile",    "leader": "Priya Patel",  "skills": "Swift, Xcode"},
-    {"id": 6, "name": "Android Team",   "dept": "Mobile",    "leader": "Dan Kim",      "skills": "Kotlin, Jetpack"},
-    {"id": 7, "name": "Security Team",  "dept": "DevOps",    "leader": "Emma Walsh",   "skills": "Pen Testing, SSL"},
-    {"id": 8, "name": "Data Pipeline",  "dept": "Backend",   "leader": "Chris Yin",    "skills": "Spark, Airflow"},
-]
-
-FAKE_DEPS = [
-    {"from": 2, "to": 3,  "type": "API Integration"},
-    {"from": 1, "to": 3,  "type": "Core Services"},
-    {"from": 3, "to": 4,  "type": "CI/CD"},
-    {"from": 5, "to": 3,  "type": "API Integration"},
-    {"from": 6, "to": 3,  "type": "API Integration"},
-    {"from": 4, "to": 7,  "type": "Security Checks"},
-    {"from": 1, "to": 8,  "type": "Data Processing"},
-    {"from": 8, "to": 4,  "type": "Infra Support"},
-]
-
-# colours map sent to the template for the legend
-DEPT_COLOURS = {d["name"]: d["colour"] for d in FAKE_DEPARTMENTS}
+# fallback colour if a dept name doesnt match any of the above
+DEFAULT_COLOUR = "#6c757d"
 
 
 def organisation_portal(request):
+    # grab all departments and their teams from the db
+    departments = Department.objects.prefetch_related("teams").select_related("organisation")
+    teams = Team.objects.select_related("department")
+    dep_count = TeamDependency.objects.count()
+
+    # build a list of dept summary dicts for the legend and stat cards
+    dept_summaries = []
+    for dept in departments:
+        colour = DEPT_COLOURS.get(dept.department_name, DEFAULT_COLOUR)
+        dept_summaries.append({
+            "name":       dept.department_name,
+            "colour":     colour,
+            "team_count": dept.teams.count(),
+        })
+
     context = {
-        "dept_summaries":    FAKE_DEPARTMENTS,
-        "teams":             FAKE_TEAMS,
-        "team_count":        len(FAKE_TEAMS),
-        "dep_count":         len(FAKE_DEPS),
+        "departments":       departments,
+        "teams":             teams,
+        "team_count":        teams.count(),
+        "dep_count":         dep_count,
+        "dept_summaries":    dept_summaries,
+        # send colours as json so the js can read them
         "dept_colours_json": json.dumps(DEPT_COLOURS),
-        # dropdown options for the dept filter
-        "departments":       FAKE_DEPARTMENTS,
     }
     return render(request, "organisation/index.html", context)
 
 
 def org_graph_data(request):
-    # filter by dept if the dropdown was used
-    dept_filter    = request.GET.get("dept", "")
+    # this is the json endpoint vis.js calls to build the network graph
+    # supports filtering by ?dept= and ?dep_type= from the dropdowns
+
+    dept_filter     = request.GET.get("dept", "")
     dep_type_filter = request.GET.get("dep_type", "")
 
-    teams = FAKE_TEAMS
+    teams_qs = Team.objects.select_related("department")
     if dept_filter:
-        teams = [t for t in teams if t["dept"] == dept_filter]
-
-    team_ids = {t["id"] for t in teams}
+        teams_qs = teams_qs.filter(department__department_name=dept_filter)
 
     nodes = []
-    for t in teams:
-        colour = DEPT_COLOURS.get(t["dept"], "#6c757d")
+    for team in teams_qs:
+        dept_name = team.department.department_name
+        colour = DEPT_COLOURS.get(dept_name, DEFAULT_COLOUR)
+
+        # build the tooltip that shows when you hover over a node
+        tooltip = (
+            f"<b>{team.team_name}</b><br>"
+            f"Leader: {team.leader_name or '&mdash;'}<br>"
+            f"Dept: {dept_name}<br>"
+            f"Skills: {team.skills or '&mdash;'}"
+        )
+
         nodes.append({
-            "id":    t["id"],
-            "label": t["name"],
-            "title": f"<b>{t['name']}</b><br>Leader: {t['leader']}<br>Dept: {t['dept']}<br>Skills: {t['skills']}",
-            "color": {"background": colour, "border": colour},
-            "font":  {"color": "#fff", "size": 13},
+            "id":    team.id,
+            "label": team.team_name,
+            "title": tooltip,
+            "color": {
+                "background": colour,
+                "border":     colour,
+                "highlight":  {"background": colour, "border": "#000"},
+            },
+            "font":  {"color": "#ffffff", "size": 13},
             "shape": "dot",
             "size":  22,
-            "dept":  t["dept"],
+            "dept":  dept_name,
         })
 
-    deps = FAKE_DEPS
+    team_ids = {t.id for t in teams_qs}
+
+    # grab all dependencies and filter to only ones where both teams are visible
+    deps_qs = TeamDependency.objects.select_related("upstream_team", "downstream_team")
     if dep_type_filter:
-        deps = [d for d in deps if d["type"] == dep_type_filter]
+        deps_qs = deps_qs.filter(dependency_type=dep_type_filter)
 
     edges = []
-    for d in deps:
-        if d["from"] in team_ids and d["to"] in team_ids:
+    for dep in deps_qs:
+        if dep.upstream_team_id in team_ids and dep.downstream_team_id in team_ids:
             edges.append({
-                "from":   d["from"],
-                "to":     d["to"],
-                "label":  d["type"],
-                "title":  d["type"],
+                "from":   dep.upstream_team_id,
+                "to":     dep.downstream_team_id,
+                "label":  dep.dependency_type,
+                "title":  dep.dependency_type,
                 "arrows": "to",
-                "color":  {"color": "#adb5bd"},
+                "color":  {"color": "#adb5bd", "highlight": "#495057"},
                 "font":   {"size": 10, "color": "#6c757d"},
                 "smooth": {"type": "curvedCW", "roundness": 0.2},
             })

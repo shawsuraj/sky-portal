@@ -31,6 +31,8 @@ class Team(models.Model):
     manager_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='managed_teams')
 
     team_name = models.CharField(max_length=150)
+    # leader name as plain text from the excel sheet - no user account needed
+    leader_name = models.CharField(max_length=150, blank=True, null=True)
     responsibilities = models.TextField(blank=True, null=True)  # Used in Overview Tab
     purpose = models.TextField(blank=True, null=True)           # Used in Overview Tab
     description = models.TextField(blank=True, null=True)       # Used for Directory Cards
