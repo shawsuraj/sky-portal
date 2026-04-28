@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 class Profile(models.Model): # Full profle attribute list
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
     profile_pic = models.ImageField(null = True, blank= True, upload_to="profile_pics/", default="profile_pics/profile.png")
-    name = models.CharField(max_length=50, null=True, blank=True)
+    forename = models.CharField(max_length=50, null=True, blank=True)
+    surname = models.CharField(max_length=50, null=True, blank=True)
     phone = models.CharField(max_length=50, null=True, blank=True)
     email = models.CharField(max_length=50, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
