@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Team, Department
 
+# no @login_required needed here - the global LoginRequiredMiddleware in settings covers all views
+
 # 1. TEAM DIRECTORY & SEARCH (Wireframe Page 7)
 def views_list(request): 
     # Grab all teams and pre-load everything needed for the directory cards

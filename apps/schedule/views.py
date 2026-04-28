@@ -94,5 +94,9 @@ def delete_meeting(request, meeting_id):
             meeting=meeting,
             user=request.user
         ).delete()
+    # Only cancel/remove it when the form sends a POST request
+    # just removes the current user from the attendee list, doesnt delete the whole meeting
+    if request.method == 'POST':
+        MeetingAttendee.objects.filter(meeting=meeting, user=request.user).delete()
 
     return redirect('schedule')
