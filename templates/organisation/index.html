@@ -80,7 +80,7 @@
     <select id="deptFilter" class="form-select form-select-sm" style="max-width:190px;" onchange="reloadGraph()">
         <option value="">All Departments</option>
         {% for dept in departments %}
-        <option value="{{ dept.name }}">{{ dept.name }}</option>
+        <option value="{{ dept.department_name }}">{{ dept.department_name }}</option>
         {% endfor %}
     </select>
 
@@ -126,41 +126,54 @@
 </div>
 
 
-<!-- GRID VIEW - hidden at start -->
+<!-- LIST VIEW - hidden at start, shows instead of network -->
 <div id="gridView" style="display:none;">
-    <div class="row g-3">
-        {% for team in teams %}
-        <div class="col-md-6 col-xl-4 card-wrapper"
-             data-name="{{ team.name|lower }}"
-             data-dept="{{ team.dept }}">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
 
-            <div class="card team-card h-100 shadow-sm border-start border-3"
-                 data-dept-colour="{{ team.dept }}">
-                <div class="card-body">
+            <!-- table -->
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:6px;" class="p-0"></th>  <!-- colour strip -->
+                        <th class="ps-3">Team</th>
+                        <th>Department</th>
+                        <th>Leader</th>
+                        <th>Skills</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams %}
+                    <!-- row-wrapper lets the js search/filter hide whole rows -->
+                    <tr class="card-wrapper"
+                        data-name="{{ team.team_name|lower }}"
+                        data-dept="{{ team.department.department_name }}">
 
-                    <div class="d-flex justify-content-between align-items-start mb-1">
-                        <h6 class="fw-semibold mb-0">{{ team.name }}</h6>
-                        <span class="badge bg-success-subtle text-success border">Active</span>
-                    </div>
+                        <!-- coloured left strip - js picks up data-dept-colour same as before -->
+                        <td class="p-0 border-0">
+                            <div data-dept-colour="{{ team.department.department_name }}"
+                                 style="width:5px; height:100%; min-height:48px;"></div>
+                        </td>
 
-                    <span class="badge bg-secondary-subtle text-secondary mb-2">{{ team.dept }}</span>
+                        <td class="ps-3 fw-semibold">{{ team.team_name }}</td>
+                        <td class="text-muted small">{{ team.department.department_name }}</td>
+                        <td class="text-muted small">{{ team.leader_name|default:"—" }}</td>
+                        <td class="text-muted small">{{ team.skills|default:"—"|truncatechars:45 }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-success-subtle text-success border">{{ team.status }}</span>
+                        </td>
 
-                    {% if team.leader %}
-                    <p class="small text-muted mb-1"><i class="bi bi-person-fill me-1"></i>{{ team.leader }}</p>
-                    {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">No teams in the database yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-                    {% if team.skills %}
-                    <p class="small text-muted mb-0"><i class="bi bi-tools me-1"></i>{{ team.skills }}</p>
-                    {% endif %}
-
-                </div>
-            </div>
         </div>
-        {% empty %}
-        <div class="col-12 text-center py-5 text-muted">
-            <p>No teams yet.</p>
-        </div>
-        {% endfor %}
     </div>
 </div>
 
@@ -294,12 +307,13 @@ function fillDepTypeDropdown(edgeList) {
     if (current) sel.value = current
 }
 
-// colour the grid cards - runs after data loads
+// colour the list strips - runs after data loads
+// data-dept-colour is on a <div> inside the first <td> now (table list view)
 function colourCards() {
-    document.querySelectorAll('[data-dept-colour]').forEach(card => {
-        const deptName = card.getAttribute('data-dept-colour')
+    document.querySelectorAll('[data-dept-colour]').forEach(el => {
+        const deptName = el.getAttribute('data-dept-colour')
         const c = COLOURS[deptName] || '#6c757d'
-        card.style.borderLeftColor = c
+        el.style.background = c
     })
 }
 
@@ -352,7 +366,9 @@ function filterCards(dept='', q='') {
         const d = el.getAttribute('data-dept')
         const matchQ = !q || name.includes(q)
         const matchD = !dept || d === dept
-        el.style.display = (matchQ && matchD) ? '' : 'none'
+        // tr needs 'table-row' to show, divs just need ''
+        const showVal = el.tagName === 'TR' ? 'table-row' : ''
+        el.style.display = (matchQ && matchD) ? showVal : 'none'
     })
 }
 

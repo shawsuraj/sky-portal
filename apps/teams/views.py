@@ -1,5 +1,16 @@
+import json
 from django.shortcuts import render, get_object_or_404
 from .models import Team, Department
+
+# reusing same colours as the org map so everything matches up
+DEPT_COLOURS = {
+    "xTV_Web":          "#e74c3c",
+    "Native TVs":       "#3498db",
+    "Mobile":           "#f39c12",
+    "Reliability_Tool": "#9b59b6",
+    "Arch":             "#2ecc71",
+    "Programme":        "#f1c40f",
+}
 
 # no @login_required needed here - the global LoginRequiredMiddleware in settings covers all views
 
@@ -27,7 +38,8 @@ def views_list(request):
 
     context = {
         'teams': teams,
-        'all_departments': all_departments, 
+        'all_departments': all_departments,
+        'dept_colours_json': json.dumps(DEPT_COLOURS),
     }
     return render(request, 'teams/teams.html', context)
 

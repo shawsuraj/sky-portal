@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-import os
 from pathlib import Path
 
 
@@ -128,21 +127,11 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-X_FRAME_OPTIONS = 'SAMEORIGIN'  # Allows for iframe to display
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-STATICFIELD_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-]
-
-X_FRAME_OPTIONS = 'SAMEORIGIN' # Allows for iframe to display 
+X_FRAME_OPTIONS = 'SAMEORIGIN'  # lets iframes work (mails, profile use them)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-LOGIN_URL = "login" # Page where user must login
-LOGIN_REDIRECT_URL = "base" # Page redirection after user logs in
-LOGOUT_REDIRECT_URL = "login" # Page redirection after user logs out
+# duplicate LOGIN_URL removed - the one up top (set when we added LoginRequiredMiddleware) is the real one
 
