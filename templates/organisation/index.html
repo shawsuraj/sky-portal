@@ -80,7 +80,7 @@
     <select id="deptFilter" class="form-select form-select-sm" style="max-width:190px;" onchange="reloadGraph()">
         <option value="">All Departments</option>
         {% for dept in departments %}
-        <option value="{{ dept.name }}">{{ dept.name }}</option>
+        <option value="{{ dept.department_name }}">{{ dept.department_name }}</option>
         {% endfor %}
     </select>
 
@@ -130,23 +130,25 @@
 <div id="gridView" style="display:none;">
     <div class="row g-3">
         {% for team in teams %}
+        <!-- data-name and data-dept are used by the search/filter js below -->
         <div class="col-md-6 col-xl-4 card-wrapper"
-             data-name="{{ team.name|lower }}"
-             data-dept="{{ team.dept }}">
+             data-name="{{ team.team_name|lower }}"
+             data-dept="{{ team.department.department_name }}">
 
+            <!-- data-dept-colour gets picked up by colourCards() to set the left border -->
             <div class="card team-card h-100 shadow-sm border-start border-3"
-                 data-dept-colour="{{ team.dept }}">
+                 data-dept-colour="{{ team.department.department_name }}">
                 <div class="card-body">
 
                     <div class="d-flex justify-content-between align-items-start mb-1">
-                        <h6 class="fw-semibold mb-0">{{ team.name }}</h6>
-                        <span class="badge bg-success-subtle text-success border">Active</span>
+                        <h6 class="fw-semibold mb-0">{{ team.team_name }}</h6>
+                        <span class="badge bg-success-subtle text-success border">{{ team.status }}</span>
                     </div>
 
-                    <span class="badge bg-secondary-subtle text-secondary mb-2">{{ team.dept }}</span>
+                    <span class="badge bg-secondary-subtle text-secondary mb-2">{{ team.department.department_name }}</span>
 
-                    {% if team.leader %}
-                    <p class="small text-muted mb-1"><i class="bi bi-person-fill me-1"></i>{{ team.leader }}</p>
+                    {% if team.leader_name %}
+                    <p class="small text-muted mb-1"><i class="bi bi-person-fill me-1"></i>{{ team.leader_name }}</p>
                     {% endif %}
 
                     {% if team.skills %}
@@ -158,7 +160,7 @@
         </div>
         {% empty %}
         <div class="col-12 text-center py-5 text-muted">
-            <p>No teams yet.</p>
+            <p>No teams in the database yet.</p>
         </div>
         {% endfor %}
     </div>
