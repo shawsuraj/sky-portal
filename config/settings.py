@@ -125,7 +125,7 @@ STATICFILES_DIRS = [
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'  # Allows for iframe to display
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-MEDIA_URL = '/images/'
+
 
 STATICFIELD_DIRS = [
     os.path.join(BASE_DIR, 'static')
@@ -133,11 +133,11 @@ STATICFIELD_DIRS = [
 
 X_FRAME_OPTIONS = 'SAMEORIGIN' # Allows for iframe to display 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images') # Where media will be stored
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 LOGIN_URL = "login" # Page where user must login
 LOGIN_REDIRECT_URL = "base" # Page redirection after user logs in
 LOGOUT_REDIRECT_URL = "login" # Page redirection after user logs out
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "base"
-LOGOUT_REDIRECT_URL = "login"
+
