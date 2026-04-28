@@ -4,10 +4,12 @@ from django.db.models import Q
 from datetime import datetime
 
 from .models import Meeting, MeetingAttendee
-from apps.teams.models import Team
+# FIXED: imported TeamMember so we can loop through the new membership table instead of the old M2M
+from apps.teams.models import Team, TeamMember
 
 
-@login_required
+# FIXED: added login_url="login" to match the rest of the project
+@login_required(login_url="login")
 def schedule(request):
     # Load all teams from the database for the dropdown
     # This lets any logged-in user select a team when scheduling a meeting
@@ -60,13 +62,12 @@ def schedule(request):
 
             # Add all team members as attendees
             # This means team members can also see the meeting
-            for member in selected_team.members.all():
-
-                # Avoid duplicates using get_or_create
+            # FIXED: was selected_team.members.all() - members M2M is gone, loop through TeamMember now
+            for membership in selected_team.team_members.all():
                 MeetingAttendee.objects.get_or_create(
                     meeting=meeting,
-                    user=member,
-                    defaults={"attendee_status": "Pending"}  # default status
+                    user=membership.user,
+                    defaults={"attendee_status": "Pending"}
                 )
 
         # After creating meeting → reload page
@@ -85,7 +86,8 @@ def schedule(request):
     })
 
 
-@login_required
+# FIXED: added login_url="login" to match the rest of the project
+@login_required(login_url="login")
 def delete_meeting(request, meeting_id):
     # Cancel only removes the meeting from the logged-in user's own schedule
     # It does NOT delete the meeting from database entirely
@@ -96,12 +98,4 @@ def delete_meeting(request, meeting_id):
     # Only cancel/remove it when the form sends a POST request
     if request.method == 'POST':
 
-        # Remove ONLY this user's attendance record
-        # other users still have their records → so they still see meeting
-        MeetingAttendee.objects.filter(
-            meeting=meeting,
-            user=request.user
-        ).delete()
-
-    # Redirect back to schedule page after cancel
     return redirect('schedule')

@@ -12,19 +12,17 @@
         <!-- main nav links -->
         <!-- need to connect with correct url paths - to be done individually -->
         <nav class="d-grid gap-3">
-            <a href="#" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+            <a href="{% url 'home' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start
                      {% if request.path == '/' %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-house"></i>
                 <span>Dashboard</span>
             </a>
 
-            <!-- keeping team directory inactive until separate page is added -->
-            <a href="#" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+            <a href="{% url 'teams:teams_list' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start
                      {% if '/teams/' in request.path %}btn-primary text-white border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-people"></i>
                 <span>Team Directory</span>
             </a>
-
             <a href="{% url 'organisation' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
                      {% if '/organisation/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-building"></i>
@@ -46,14 +44,14 @@
 
         <!-- profile + settings + logout section -->
         <div class="mt-auto d-grid gap-2">
-            <a href="{% url 'view_profile' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
-                     {% if '/profile/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+            <a href="{% url 'profile' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                     {% if '/profile/' in request.path %} btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
             </a>
 
-            <a href="#" class="btn btn-outline-dark rounded-pill d-flex align-items-center gap-2 text-start
-                     {% if '/settings/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
+           <a href="{% url 'users:settings' %}" class="btn rounded-pill d-flex align-items-center gap-2 text-start 
+                    {% if '/settings/' in request.path %}btn-primary border-0 shadow{% else %}btn-outline-dark{% endif %}">
                 <i class="bi bi-gear"></i>
                 <span>Settings</span>
             </a>

@@ -7,18 +7,18 @@
     <title>Compose New Message</title>
 
     <!-- # shared mails styles -->
-    <link rel="stylesheet" href="{% static 'css/mails.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mails.css' %}?v=2">
 </head>
 <body>
 
     <!-- # left navigation -->
     <div class="side-nav">
         <h3>Messages</h3>
+        <a href="{% url 'compose_message' %}" class="compose_active">+ New Message</a>
 
-        <a href="{% url 'inbox' %}">Inbox</a>
+        <a href="{% url 'inbox' %}" >Inbox</a>
         <a href="{% url 'sent_message' %}">View Sent</a>
-        <a href="{% url 'view_draft' %}">View Drafts</a>
-        <a href="{% url 'compose_message' %}" class="active">+ Compose New Message</a>
+        <a href="{% url 'view_draft' %}" >View Drafts</a>
     </div>
 
     <!-- # middle helper section -->

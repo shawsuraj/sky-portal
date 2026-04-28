@@ -7,7 +7,7 @@
     <title>Draft Messages</title>
 
     <!-- # shared mails styles -->
-    <link rel="stylesheet" href="{% static 'css/mails.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mails.css' %}?v=2">
 
     <script>
         // # show selected draft and reveal action buttons
@@ -29,10 +29,11 @@
     <div class="side-nav">
         <h3>Messages</h3>
 
-        <a href="{% url 'inbox' %}">Inbox</a>
-        <a href="{% url 'sent_message' %}">View Sent</a>
+        <a href="{% url 'compose_message' %}"  class="compose">+ New Message</a>
+
+        <a href="{% url 'inbox' %}" >Inbox</a>
+        <a href="{% url 'sent_message' %}" >View Sent</a>
         <a href="{% url 'view_draft' %}" class="active">View Drafts</a>
-        <a href="{% url 'compose_message' %}">+ Compose New Message</a>
     </div>
 
     <!-- # middle draft list -->
@@ -49,7 +50,7 @@
                     '{{ message.timestamp|date:'Y-m-d H:i'|escapejs }}'
                  )">
 
-                <strong>{{ message.receiver.username }}</strong>
+                <strong>To: {{ message.receiver.username }}</strong>
                 {{ message.subject }}<br>
 
                 <small>

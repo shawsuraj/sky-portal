@@ -12,6 +12,32 @@ body{
 
 /* LEFT SIDE NAVIGATION */
 
+/* compose button */
+.side-nav a.compose{
+    background:#174494;
+    color:rgb(255, 255, 255);
+    border:1px solid #174494;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.side-nav a.compose:hover{
+    background:#5a96ff;
+    color:rgb(255, 255, 255);
+}
+
+.side-nav a.compose:active{
+    background:#0f3270;
+    color:white;
+}
+
+.side-nav a.compose_active{
+    background:#0c203e;
+    color:rgb(255, 255, 255);
+    border:1px solid #174494;
+    font-weight:bold;
+    margin-bottom:20px;
+}
 
 .side-nav{
     width:220px;
@@ -146,7 +172,6 @@ body{
     text-decoration:none;
     cursor:pointer;
 }
-
 
 /* primary button */
 .send-btn,
