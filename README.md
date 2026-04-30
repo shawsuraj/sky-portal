@@ -1,225 +1,107 @@
-# Sky Portal (dev)
+# Sky Portal
 
-Please read this document carefully before starting any work. Following a consistent workflow is important to avoid conflicts and ensure that all parts of the system integrate correctly.
+A web app for Sky Engineering — lets you search teams, view the org structure, send internal messages, and schedule meetings. Built with Django + SQLite for our 5COSC021W coursework.
 
+## What it does
 
+- **Dashboard** — overview of teams, departments, unread messages and recent activity
+- **Teams** — browse and search all engineering teams, view team details, members, repos and dependencies
+- **Organisation** — interactive network map showing how teams depend on each other (vis.js), filterable by department and dependency type
+- **Messages** — internal messaging between users (inbox, sent, drafts)
+- **Schedule** — create and manage team meetings, see upcoming schedule
+- **Auth** — register, login, logout, update profile
 
-## Project Overview
+## Project structure
 
-We are developing a Django-based web application.
-
-Each team member is responsible for implementing a specific feature (for example: teams, organisation, messages, schedule, reports). However, all features must be integrated into a single, fully functional application.
-
-This means:
-- You will work independently on your feature
-- Your work must remain compatible with the rest of the system
-
-
-
-## Project Structure
-
-Please do not modify the structure below.
-
-Project structure inspired from:
-https://medium.com/django-unleashed/django-project-structure-a-comprehensive-guide-4b2ddbf2b6b8
-
-```bash
+```
 sky-portal/
-│
 ├── manage.py
 ├── requirements.txt
-├── README.md
-├── .gitignore
 │
-├── config/                  # Django project (settings, urls)
+├── config/               # settings.py, urls.py
 │
-├── apps/                    # ALL FEATURES (modular)
-│   ├── teams/               # Vinicius
-│   ├── organisation/        # Suraj Shaw
-│   ├── messages/            # Hamdan
-│   ├── schedule/            # Shqipdon
-│   ├── users/               # AUTH (shared)
-│   ├── core/                # homepage, navbar, base logic
-│       ├── reports/         # Mohammad
+├── apps/
+│   ├── core/             # dashboard / home view
+│   ├── teams/            # team directory, team detail, models (Team, Dept, Org, Dependency)
+│   ├── organisation/     # org map + JSON graph endpoint
+│   ├── mails/            # internal messages
+│   ├── schedule/         # meetings and attendees
+│   └── users/            # registration, login, profile
 │
 ├── templates/
-│   ├── base.html            # ONE shared layout
-│   ├── components/          # navbar, footer
+│   ├── base.html         # shared layout (sidebar + topbar)
+│   ├── dashboard.html
+│   ├── components/       # left_nav, topbar
 │   ├── teams/
 │   ├── organisation/
-│   ├── messages/
+│   ├── mails/
 │   ├── schedule/
+│   └── users/
 │
 ├── static/
 │   ├── css/
-│   ├── js/
+│   └── js/
 │
-├── docs/                    # FOR COURSEWORK MARKS
-│   ├── ERD.jpeg
-│   ├── test-plans.md
-│   ├── meeting-notes.md
-│   ├── ui-designs/         # All the figma design
-│
-├── scripts/                # optional setup scripts
-├── reports/                # Reports by Mohammad
-
+└── docs/                 # meeting notes, test plans, UI designs
 ```
 
-Explanation:
-- `apps/` contains backend logic (views, models, urls)
-- `templates/` contains frontend HTML files
-- `static/` contains CSS and JavaScript files
+## Who built what
 
+| Feature | Developer |
+|---|---|
+| Teams | Vinicius |
+| Organisation + Dashboard + base template | Suraj Shaw |
+| Messages | Hamdan |
+| Schedule | Shqipdon |
 
+## Test Accounts
 
-## Responsibilities
+| Role | Username | Password |
+|---|---|---|
+| User | Hamdankz | group123 |
+| User | Shqipdonuk | group123 |
+| Admin | SU | SU123 |
 
-Each team member should primarily work within their assigned app.
-
-- Teams : `apps/teams` -
-- Organisation : `apps/organisation` - 
-- Messages : `apps/messages` - 
-- Schedule : `apps/schedule` - 
-
-Please avoid modifying other team members code unless it has been discussed with them.
-
-
-
-## GitHub Workflow
-
-We are using the following branches:
-
-- `main` → final version (submission)
-- `dev` → main working branch
-- `feature/*` → individual work branches
-
-
-
-## Rules
-
-The following rules must be followed:
-
-1. Do not push directly to the `main` branch  
-2. Always create and work on your own feature branch  
-3. Always pull the latest changes from `dev` before starting work  
-4. Do not modify shared database models without informing the group  
-5. Do not edit other team members’ files without agreement  
-
-
-
-
-## Initial Setup
-
-Clone the repository and switch to the develop branch:
+## Setup
 
 ```bash
-git clone <repository-url>
-cd sky-engineering-app
-git checkout develop
+git clone https://github.com/shawsuraj/sky-portal.git
+cd sky-portal
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
 ```
 
-OR use github Desktop to clone (easier).
+To seed the database from the Excel file (put the file in the project root first):
 
+```bash
+python manage.py load_excel
+```
 
+## Branching
 
-## Daily Workflow
+- `main` — submission branch, don’t push here directly
+- `dev` — main working branch, all PRs go here
+- `feature/<name>` — your own branch for your feature
 
-### 1. Update your local repository
+Basic flow:
 
 ```bash
 git checkout dev
 git pull origin dev
+git checkout -b feature/your-feature
+# do your work
+git push origin feature/your-feature
+# open a PR into dev on GitHub
 ```
 
-### 2. Create a feature branch
+If you’re merging `dev` into your branch to stay up to date:
 
 ```bash
-git checkout -b feature/your-feature-name
+git merge dev
 ```
 
-Example:
-- `feature/teams`
-- `feature/messages`
+## Admin
 
-
-
-### 3. Implement your feature
-
-Work only within your assigned app and related templates.
-
-
-
-### 4. Commit your changes
-
-```bash
-git add .
-git commit -m "Implemented team search functionality"
-```
-
-Commit messages should clearly describe the changes made.
-
-
-
-### 5. Push your branch
-
-```bash
-git push origin feature/your-feature-name
-```
-
-
-
-### 6. Create a Pull Request
-
-On GitHub:
-- Create a Pull Request from your feature branch
-- Target branch should be `dev`
-
----
-
-OR use GitHub Desktop to easily mangae branches and seeing coded chenges before commits (recommended in the begining).
-
----
-
-## Pull Request Process
-
-- Your code will be reviewed before merging  
-- If changes are required, update your branch and push again  
-- Once approved, the branch will be merged into `dev`
-
----
-
-## Integration Notes
-
-All components are connected through:
-- URL configurations
-- Templates
-- Shared database models
-
-Uncoordinated changes (e.g. renaming models, URLs, or templates) may break other parts of the system. Please ensure compatibility.
-
----
-
-## Common Mistakes to Avoid
-
-- Pushing directly to `main`  
-- Working without pulling the latest updates  
-- Making large, infrequent commits  
-- Modifying shared files without coordination  
-- Leaving work until the last stage  
-
----
-
-## General Guidelines
-
-- Commit regularly with clear messages  
-- Test your code before pushing  
-- Keep code clean and consistent  
-- Communicate any issues early  
-
----
-
-## Final Note
-
-This is a collaborative project. All parts must be integrated into a single working application, and teamwork is essential for success. And even if any mistake happens in maganing github, we can always reverse it as it has version control.
-
----
+Django admin is at `/admin/`. Log in with your superuser account. All models are registered so you can add/edit/delete teams, departments, messages, meetings etc from there.
